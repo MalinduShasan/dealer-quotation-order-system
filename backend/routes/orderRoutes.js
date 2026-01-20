@@ -1,13 +1,14 @@
 const express = require("express");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 /**
  * CREATE QUOTATION / ORDER
  */
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   try {
     const { customerName, customerEmail, items } = req.body;
 
@@ -46,7 +47,7 @@ router.post("/", async (req, res) => {
 /**
  * GET ALL ORDERS
  */
-router.get("/", async (req, res) => {
+router.get("/",protect, async (req, res) => {
   try {
     const orders = await Order.find().populate("items.product");
     res.json(orders);
