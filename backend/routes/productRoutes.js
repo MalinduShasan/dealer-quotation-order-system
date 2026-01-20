@@ -1,5 +1,6 @@
 const express = require("express");
 const Product = require("../models/Product");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -14,10 +15,10 @@ router.get("/", async (req, res) => {
 });
 
 // POST create new product
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   try {
     const { name, description, price, stock, dealer } = req.body;
-    const product = await Product.create({ name, description, price, stock, dealer });
+    const product = await Product.create({ name, description, price, stock,  dealer: req.user._id });
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
