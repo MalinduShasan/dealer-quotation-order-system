@@ -14,14 +14,15 @@ const quotationSchema = new mongoose.Schema(
           ref: "Product",
           required: true
         },
-        quantity: { type: Number, required: true }
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true } // store price at time of quotation
       }
     ],
-    totalAmount: { type: Number, required: true },
+    totalPrice: { type: Number, required: true }, // renamed from totalAmount
     status: {
       type: String,
-      enum: ["quotation", "ordered"],
-      default: "quotation"
+      enum: ["pending", "approved", "rejected"], // better tracking
+      default: "pending"
     }
   },
   { timestamps: true }
