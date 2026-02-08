@@ -21,7 +21,7 @@ const quotationSchema = new mongoose.Schema(
     totalPrice: { type: Number, required: true }, // renamed from totalAmount
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected"], // better tracking
+      enum: ["pending", "approved", "rejected", "ordered"], // better tracking
       default: "pending"
     }
   },
