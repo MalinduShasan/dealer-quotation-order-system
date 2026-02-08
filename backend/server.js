@@ -31,6 +31,9 @@ app.use("/api/quotations", require("./routes/quotationRoutes"));
 const dealerRoutes = require("./routes/dealerRoutes");
 app.use("/api/dealer", dealerRoutes);
 
+const quotationRoutes = require("./routes/quotationRoutes");
+app.use("/api/quotations", quotationRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
