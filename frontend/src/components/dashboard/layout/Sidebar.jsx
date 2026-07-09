@@ -34,6 +34,7 @@ const iconMap = {
 const routeMap = {
   dashboard: "/dashboard",
   users: "/users",
+  dealers: "/dealers",
   quotations: "/quotations"
 };
 

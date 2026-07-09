@@ -116,7 +116,8 @@
 }
 
 .inlineField select,
-.fieldInput {
+.fieldInput,
+.textArea {
   min-width: 180px;
   padding: 12px 14px;
   border-radius: 14px;
@@ -128,10 +129,8 @@
 }
 
 .inlineField select,
-.fieldInput[type="text"],
-.fieldInput[type="email"],
-.fieldInput[type="password"],
-.fieldInput select {
+.fieldInput,
+.textArea {
   -webkit-appearance: none;
   appearance: none;
 }
@@ -142,7 +141,8 @@
   color: var(--text-primary);
 }
 
-.fieldInput {
+.fieldInput,
+.textArea {
   width: 100%;
 }
 
@@ -152,7 +152,8 @@
 }
 
 .inlineField select:focus,
-.fieldInput:focus {
+.fieldInput:focus,
+.textArea:focus {
   border-color: var(--accent-primary);
   box-shadow: var(--shadow-accent-ring);
 }
@@ -199,17 +200,16 @@
   color: var(--text-primary);
 }
 
-.dangerButton,
-.actionDanger {
+.dangerButton {
   border: 1px solid var(--border-soft);
   background: var(--bg-danger-soft);
   color: var(--text-danger);
 }
 
-.actionSuccess {
+.actionWarning {
   border: 1px solid var(--border-soft);
-  background: var(--bg-success-soft);
-  color: var(--text-success);
+  background: var(--bg-warning-soft);
+  color: var(--text-warning);
 }
 
 .primaryButton:hover,
@@ -243,7 +243,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 820px;
+  min-width: 960px;
 }
 
 .table th,
@@ -267,10 +267,6 @@
   vertical-align: top;
 }
 
-.table td::before {
-  content: none;
-}
-
 .userCell {
   display: grid;
   gap: 4px;
@@ -291,26 +287,6 @@
   text-transform: capitalize;
 }
 
-.roleBadge {
-  background: var(--bg-accent-soft);
-  color: var(--accent-primary);
-}
-
-.naBadge {
-  background: var(--bg-subtle-strong);
-  color: var(--text-secondary);
-}
-
-.pendingBadge {
-  background: var(--bg-warning-soft);
-  color: var(--text-warning);
-}
-
-.linkedBadge {
-  background: var(--bg-success-soft);
-  color: var(--text-success);
-}
-
 .active {
   background: var(--bg-success-soft);
   color: var(--text-success);
@@ -321,7 +297,7 @@
   color: var(--text-warning);
 }
 
-.suspended {
+.blocked {
   background: var(--bg-danger-soft);
   color: var(--text-danger);
 }
@@ -333,106 +309,6 @@
 
 .actionButton {
   padding: 10px 12px;
-}
-
-.profileCell {
-  display: grid;
-  gap: 8px;
-  min-width: 180px;
-}
-
-.profileCellLinked {
-  align-content: start;
-  gap: 10px;
-}
-
-.profileSummaryRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.profileCellInline {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;
-}
-
-.profileDetailsInline {
-  display: grid;
-  gap: 10px;
-}
-
-.profileMeta {
-  display: grid;
-  gap: 4px;
-  padding-left: 2px;
-}
-
-.profileMeta strong {
-  color: var(--text-primary);
-  font-size: 0.88rem;
-  line-height: 1.2;
-}
-
-.profileMeta span {
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  line-height: 1.35;
-}
-
-.profileActionButton {
-  width: fit-content;
-  white-space: nowrap;
-  padding: 9px 12px;
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  background: var(--bg-info-soft);
-  color: var(--text-info);
-  cursor: pointer;
-  transition: transform var(--transition-base), border-color var(--transition-base);
-}
-
-.profileCellLinked .profileActionButton {
-  margin-top: 2px;
-}
-
-.profileExpandButton {
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border-soft);
-  border-radius: 999px;
-  background: var(--bg-subtle);
-  cursor: pointer;
-  transition: transform var(--transition-base), border-color var(--transition-base), background var(--transition-base);
-}
-
-.profileExpandButton:hover {
-  transform: translateY(-1px);
-  border-color: var(--border-strong);
-}
-
-.profileExpandChevron {
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid var(--text-secondary);
-  border-bottom: 2px solid var(--text-secondary);
-  transform: rotate(45deg) translateY(-1px);
-  transition: transform var(--transition-base);
-}
-
-.profileExpandButtonOpen .profileExpandChevron {
-  transform: rotate(-135deg) translate(-1px, -1px);
-}
-
-.profileActionButton:hover {
-  transform: translateY(-1px);
-  border-color: var(--border-strong);
 }
 
 .stateBlock,
@@ -479,7 +355,7 @@
 
 .modalCard,
 .confirmCard {
-  width: min(100%, 720px);
+  width: min(100%, 860px);
   border-radius: 24px;
   padding: 24px;
 }
@@ -491,11 +367,6 @@
   overflow: hidden;
 }
 
-.dealerProfileModal,
-.profileDetailsModal {
-  width: min(100%, 860px);
-}
-
 .confirmCard {
   width: min(100%, 520px);
   display: grid;
@@ -503,22 +374,12 @@
 }
 
 .formGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.dealerProfileGrid {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   overflow-y: auto;
   padding-right: 4px;
-}
-
-.formGrid .fieldGroup:nth-child(3) {
-  grid-column: 1 / -1;
 }
 
 .modalActions {
@@ -560,34 +421,6 @@
   padding: 8px 10px;
 }
 
-.profileDetailsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.detailCard {
-  padding: 16px;
-  border-radius: 18px;
-  border: 1px solid var(--border-soft);
-  background: var(--bg-card-muted);
-  display: grid;
-  gap: 8px;
-}
-
-.detailCard span {
-  color: var(--text-muted);
-  font-size: 0.82rem;
-}
-
-.detailCard strong {
-  color: var(--text-primary);
-}
-
-.detailCardWide {
-  grid-column: 1 / -1;
-}
-
 .success {
   border-color: var(--accent-success);
 }
@@ -613,15 +446,6 @@
 
   .formGrid {
     grid-template-columns: 1fr;
-  }
-
-  .dealerProfileGrid,
-  .profileDetailsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .table {
-    min-width: 720px;
   }
 }
 
@@ -654,91 +478,5 @@
 
   .toast {
     width: 100%;
-  }
-
-  .profileCellInline {
-    flex-wrap: wrap;
-    align-items: flex-start;
-  }
-
-  .profileSummaryRow {
-    align-items: flex-start;
-  }
-
-  .tableWrap {
-    overflow: visible;
-    border: 0;
-    border-radius: 0;
-  }
-
-  .table,
-  .table thead,
-  .table tbody,
-  .table tr,
-  .table td {
-    display: block;
-    width: 100%;
-  }
-
-  .table {
-    min-width: 0;
-    border-collapse: separate;
-    border-spacing: 0;
-  }
-
-  .table thead {
-    display: none;
-  }
-
-  .table tbody {
-    display: grid;
-    gap: 14px;
-  }
-
-  .table tr {
-    padding: 16px;
-    border: 1px solid var(--border-soft);
-    border-radius: 18px;
-    background: var(--bg-card-muted);
-  }
-
-  .table td {
-    padding: 10px 0 10px 112px;
-    position: relative;
-    border-bottom: 1px solid var(--border-table);
-    min-height: 40px;
-  }
-
-  .table td:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
-  }
-
-  .table td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 0;
-    top: 10px;
-    width: 96px;
-    color: var(--text-muted);
-    font-size: 0.76rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .actionRow {
-    gap: 10px;
-  }
-
-  .actionButton,
-  .profileActionButton {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .profileCell,
-  .profileCellInline {
-    min-width: 0;
   }
 }

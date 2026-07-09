@@ -20,3 +20,10 @@ export const updateUser = (token, userId, payload) =>
 
 export const updateUserStatus = (token, userId, status) =>
   axios.patch(`${API_URL}/users/${userId}/status`, { status }, authConfig(token));
+
+export const getUserDealerProfile = (user) => ({
+  exists: Boolean(user?.dealerProfileExists),
+  dealerId: user?.dealerId || null,
+  dealerCode: user?.dealerCode || null,
+  companyName: user?.companyName || null
+});

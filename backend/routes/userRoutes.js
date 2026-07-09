@@ -10,7 +10,7 @@ const allowedStatuses = ["active", "inactive", "suspended"];
 
 const normalizeEmail = (email = "") => email.trim().toLowerCase();
 const normalizeText = (value = "") => value.trim();
-const serializeUser = (user) => {
+const serializeUser = (user, dealerProfile = null) => {
   const mappedUser = mapUser(user);
 
   if (!mappedUser) return null;
@@ -22,6 +22,10 @@ const serializeUser = (user) => {
     email: mappedUser.email,
     role: mappedUser.role,
     status: mappedUser.status,
+    dealerProfileExists: Boolean(dealerProfile),
+    dealerId: dealerProfile?.id || null,
+    dealerCode: dealerProfile?.dealer_code || null,
+    companyName: dealerProfile?.company_name || null,
     createdAt: mappedUser.createdAt,
     updatedAt: mappedUser.updatedAt
   };
@@ -165,8 +169,28 @@ router.get("/", protect, adminOnly, async (req, res) => {
       throw new Error(error.message);
     }
 
+    const userRows = data || [];
+    const dealerUserIds = userRows
+      .filter((user) => user.role === "dealer")
+      .map((user) => user.id);
+
+    let dealerProfilesByUserId = new Map();
+
+    if (dealerUserIds.length > 0) {
+      const dealerProfiles = await unwrap(
+        supabase
+          .from("dealers")
+          .select("id, user_id, dealer_code, company_name")
+          .in("user_id", dealerUserIds)
+      );
+
+      dealerProfilesByUserId = new Map(
+        dealerProfiles.map((dealerProfile) => [dealerProfile.user_id, dealerProfile])
+      );
+    }
+
     res.json({
-      items: (data || []).map(serializeUser),
+      items: userRows.map((user) => serializeUser(user, dealerProfilesByUserId.get(user.id))),
       pagination: {
         page,
         limit,
