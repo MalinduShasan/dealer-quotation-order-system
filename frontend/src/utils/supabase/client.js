@@ -1,0 +1,12 @@
+import { createBrowserClient } from "@supabase/ssr";
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_PUBLISHABLE_KEY;
+
+export const createClient = () => {
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase environment variables are missing");
+  }
+
+  return createBrowserClient(supabaseUrl, supabaseKey);
+};
