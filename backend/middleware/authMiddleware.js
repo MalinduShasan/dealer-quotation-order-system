@@ -1,61 +1,59 @@
 const jwt = require("jsonwebtoken");
 const { supabase, unwrapSingle, mapUser } = require("../lib/supabaseUtils");
 
-// Protect routes
 const protect = async (req, res, next) => {
-  let token;
+  try {
+    const authHeader = req.headers.authorization;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await unwrapSingle(
-        supabase
-          .from("users")
-          .select("id, name, email, role, created_at, updated_at")
-          .eq("id", decoded.id)
-          .maybeSingle()
-      );
-
-      req.user = mapUser(user);
-      if (!req.user) {
-        return res.status(401).json({ message: "User not found" });
-      }
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: "Not authorized" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "No token provided" });
     }
-  } else {
-    return res.status(401).json({ message: "No token provided" });
-  }
-};
 
-// Role-based middleware
-const customerOnly = (req, res, next) => {
-  if (req.user && req.user.role === "customer") {
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const userRecord = await unwrapSingle(
+      supabase
+        .from("users")
+        .select("id, name, email, role, status, created_at, updated_at")
+        .eq("id", decoded.id)
+        .maybeSingle()
+    );
+
+    if (!userRecord) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    if (userRecord.status !== "active") {
+      return res.status(403).json({ message: "User account is not active" });
+    }
+
+    req.user = mapUser(userRecord);
     next();
-  } else {
-    res.status(403).json({ message: "Customer access only" });
+  } catch (error) {
+    return res.status(401).json({ message: "Not authorized" });
   }
 };
 
-const adminOnly = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
+const allowRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
     next();
-  } else {
-    res.status(403).json({ message: "Admin access only" });
-  }
+  };
 };
 
-const dealerOnly = (req, res, next) => {
-  if (req.user && req.user.role === "dealer") {
-    next();
-  } else {
-    res.status(403).json({ message: "Dealer access only" });
-  }
-};
+const adminOnly = allowRoles("admin");
+const managerOnly = allowRoles("manager");
+const salesOnly = allowRoles("sales_executive");
+const dealerOnly = allowRoles("dealer");
 
-module.exports = { protect, customerOnly, dealerOnly, adminOnly };
+module.exports = {
+  protect,
+  allowRoles,
+  adminOnly,
+  managerOnly,
+  salesOnly,
+  dealerOnly
+};

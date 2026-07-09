@@ -1,0 +1,124 @@
+.dashboardShell {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  background:
+    radial-gradient(circle at top left, rgba(168, 147, 100, 0.08), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(84, 110, 146, 0.08), transparent 22%),
+    var(--bg-primary);
+  overflow: hidden;
+}
+
+.workspace {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.welcomeCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+}
+
+.welcomeEyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.78rem;
+}
+
+.welcomeTitle {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+  font-weight: 600;
+}
+
+.welcomeMessage {
+  margin: 0;
+  max-width: 620px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.datePanel {
+  min-width: 190px;
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--bg-card-muted);
+  border: 1px solid var(--border-soft);
+  color: var(--text-secondary);
+}
+
+.datePanel strong {
+  color: var(--text-primary);
+  font-size: 1.35rem;
+}
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.85fr);
+  gap: 20px;
+}
+
+.primaryColumn,
+.secondaryColumn {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-width: 0;
+}
+
+.bottomGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1180px) {
+  .contentGrid,
+  .bottomGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 920px) {
+  .dashboardShell {
+    grid-template-columns: 1fr;
+  }
+
+  .mainContent {
+    padding: 18px;
+  }
+
+  .welcomeCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

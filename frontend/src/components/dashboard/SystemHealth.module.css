@@ -1,0 +1,8 @@
+.list { display: grid; gap: 14px; }
+.row { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-table); }
+.row:last-child { border-bottom: 0; padding-bottom: 0; }
+.row p { margin: 6px 0 0; color: var(--text-secondary); }
+.status { padding: 8px 12px; border-radius: 999px; font-size: .82rem; }
+.good { background: var(--bg-success-soft); color: var(--text-success); }
+.warn { background: var(--bg-warning-soft); color: var(--text-warning); }
+.neutral { background: var(--bg-info-soft); color: var(--text-info); }

@@ -1,0 +1,8 @@
+.list { display: grid; gap: 14px; }
+.row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; padding: 14px; border-radius: 18px; background: var(--bg-subtle); }
+.icon { width: 18px; height: 18px; color: var(--accent-red); }
+.meta { display: grid; }
+.meta span, .stock span { color: var(--text-secondary); font-size: .82rem; }
+.stock { display: grid; text-align: right; }
+.status { padding: 6px 10px; border-radius: 999px; background: var(--bg-danger-soft); color: var(--text-danger); font-size: .8rem; }
+@media (max-width: 520px) { .row { grid-template-columns: 1fr; } .stock { text-align:left; } }

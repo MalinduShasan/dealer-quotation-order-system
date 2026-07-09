@@ -1,0 +1,151 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-backdrop);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+  z-index: 19;
+}
+
+.backdropVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar {
+  width: 256px;
+  min-height: 100vh;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-sidebar);
+  transition: width 220ms ease, transform 220ms ease;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.collapsed {
+  width: 76px;
+}
+
+.brandBlock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 2px;
+}
+
+.brandMark {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: var(--bg-accent-gradient);
+  color: var(--text-on-accent);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.brandEyebrow {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.brandTitle {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.collapseButton {
+  align-self: stretch;
+  margin: 0 4px 4px;
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 14px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.82rem;
+}
+
+.navList {
+  display: grid;
+  gap: 4px;
+  flex: 1;
+  align-content: start;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 10px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease;
+  text-align: left;
+  min-height: 42px;
+  width: 100%;
+}
+
+.navItem:hover {
+  background: var(--bg-hover);
+}
+
+.active {
+  background: var(--bg-accent-soft);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  box-shadow: inset 3px 0 0 var(--accent-primary);
+}
+
+.navIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.logoutButton {
+  margin-top: auto;
+  color: var(--text-danger);
+}
+
+.collapsed .brandBlock,
+.collapsed .navItem,
+.collapsed .logoutButton {
+  justify-content: center;
+}
+
+.collapsed .collapseButton {
+  padding-inline: 0;
+}
+
+@media (max-width: 920px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    transform: translateX(-100%);
+  }
+
+  .mobileOpen {
+    transform: translateX(0);
+  }
+
+  .collapsed {
+    width: 256px;
+  }
+}

@@ -1,0 +1,7 @@
+.list { display: grid; gap: 14px; }
+.notification { padding: 14px; border-radius: 18px; border: 1px solid transparent; }
+.notification p { margin: 8px 0 0; color: var(--text-secondary); line-height: 1.55; }
+.warning { background: var(--bg-warning-soft); border-color: var(--border-strong); }
+.success { background: var(--bg-success-soft); border-color: var(--border-strong); }
+.danger { background: var(--bg-danger-soft); border-color: var(--border-strong); }
+.info { background: var(--bg-info-soft); border-color: var(--border-strong); }

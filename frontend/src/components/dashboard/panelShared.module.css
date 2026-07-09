@@ -1,0 +1,22 @@
+.panel {
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: .72rem;
+}
+
+.title {
+  margin: 0 0 18px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}

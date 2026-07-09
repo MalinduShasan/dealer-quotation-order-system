@@ -1,0 +1,7 @@
+.card { grid-column: span 3; }
+.bars { margin-top: 20px; height: 220px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; align-items: end; }
+.barWrap { display: grid; gap: 8px; justify-items: center; }
+.bar { width: 100%; border-radius: 999px 999px 10px 10px; background: linear-gradient(180deg, var(--accent-blue), var(--accent-info)); min-height: 24px; }
+.barWrap span { color: var(--text-muted); font-size: .75rem; }
+@media (max-width: 1180px) { .card { grid-column: span 6; } }
+@media (max-width: 720px) { .card { grid-column: span 12; } }

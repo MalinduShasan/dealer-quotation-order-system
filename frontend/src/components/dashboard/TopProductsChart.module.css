@@ -1,0 +1,8 @@
+.card { grid-column: span 6; }
+.list { margin-top: 20px; display: grid; gap: 16px; }
+.row { display: grid; gap: 10px; }
+.meta { display: flex; justify-content: space-between; gap: 12px; color: var(--text-secondary); }
+.meta strong { color: var(--text-primary); }
+.track { height: 12px; border-radius: 999px; background: var(--bg-subtle-strong); overflow: hidden; }
+.fill { height: 100%; border-radius: inherit; background: var(--bg-accent-gradient); }
+@media (max-width: 1180px) { .card { grid-column: span 12; } }

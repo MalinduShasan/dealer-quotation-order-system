@@ -1,0 +1,12 @@
+.actions { display: flex; gap: 8px; }
+.actions button { border: 1px solid var(--border-soft); background: transparent; color: var(--text-primary); border-radius: 12px; padding: 8px 10px; cursor: pointer; }
+.badge { padding: 8px 12px; border-radius: 999px; font-size: .78rem; border: 1px solid transparent; }
+.Draft { background: var(--bg-subtle-strong); color: var(--text-secondary); }
+.PendingApproval { background: var(--bg-warning-soft); color: var(--text-warning); }
+.Approved { background: var(--bg-success-soft); color: var(--text-success); }
+.Sent { background: var(--bg-info-soft); color: var(--text-info); }
+.Accepted { background: var(--bg-success-soft); color: var(--accent-secondary); }
+.Rejected { background: var(--bg-danger-soft); color: var(--text-danger); }
+.Expired { background: var(--bg-subtle-strong); color: var(--text-violet); }
+.Converted { background: var(--bg-success-soft); color: var(--accent-green); }
+.default { background: var(--bg-subtle-strong); color: var(--text-secondary); }
