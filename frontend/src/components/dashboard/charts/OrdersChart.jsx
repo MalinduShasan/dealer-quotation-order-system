@@ -1,5 +1,5 @@
 import styles from "./OrdersChart.module.css";
-import shared from "./chartShared.module.css";
+import shared from "../shared/chartShared.module.css";
 
 export default function OrdersChart({ data }) {
   const max = Math.max(...data);

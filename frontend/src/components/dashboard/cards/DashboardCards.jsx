@@ -1,5 +1,5 @@
 import styles from "./DashboardCards.module.css";
-import { TrendDownIcon, TrendUpIcon, WarningIcon } from "./dashboardIcons";
+import { TrendDownIcon, TrendUpIcon, WarningIcon } from "../dashboardIcons";
 
 const accentClass = {
   champagne: styles.champagne,

@@ -1,6 +1,6 @@
 import styles from "./LowStockPanel.module.css";
-import shared from "./panelShared.module.css";
-import { WarningIcon } from "./dashboardIcons";
+import shared from "../shared/panelShared.module.css";
+import { WarningIcon } from "../dashboardIcons";
 
 export default function LowStockPanel({ rows }) {
   return (

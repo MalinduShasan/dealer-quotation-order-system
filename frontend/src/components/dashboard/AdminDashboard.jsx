@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import styles from "./AdminDashboard.module.css";
-import Sidebar from "./Sidebar";
-import Navbar from "./Navbar";
-import DashboardCards from "./DashboardCards";
-import RevenueChart from "./RevenueChart";
-import OrdersChart from "./OrdersChart";
-import QuotationChart from "./QuotationChart";
-import TopProductsChart from "./TopProductsChart";
-import DealerGrowthChart from "./DealerGrowthChart";
-import RecentSalesChart from "./RecentSalesChart";
-import RecentQuotationTable from "./RecentQuotationTable";
-import RecentOrdersTable from "./RecentOrdersTable";
-import RecentActivity from "./RecentActivity";
-import NotificationPanel from "./NotificationPanel";
-import QuickActions from "./QuickActions";
-import SystemHealth from "./SystemHealth";
-import LowStockPanel from "./LowStockPanel";
+import Sidebar from "./layout/Sidebar";
+import Navbar from "./layout/Navbar";
+import DashboardCards from "./cards/DashboardCards";
+import RevenueChart from "./charts/RevenueChart";
+import OrdersChart from "./charts/OrdersChart";
+import QuotationChart from "./charts/QuotationChart";
+import TopProductsChart from "./charts/TopProductsChart";
+import DealerGrowthChart from "./charts/DealerGrowthChart";
+import RecentSalesChart from "./charts/RecentSalesChart";
+import RecentQuotationTable from "./tables/RecentQuotationTable";
+import RecentOrdersTable from "./tables/RecentOrdersTable";
+import RecentActivity from "./panels/RecentActivity";
+import NotificationPanel from "./panels/NotificationPanel";
+import QuickActions from "./panels/QuickActions";
+import SystemHealth from "./panels/SystemHealth";
+import LowStockPanel from "./panels/LowStockPanel";
 import DashboardFooter from "./DashboardFooter";
 import {
   kpis,
@@ -58,7 +58,15 @@ function greetingByHour(date) {
   return "Good Evening";
 }
 
-export default function AdminDashboard({ user, theme, onToggleTheme, onLogout, onNavigate }) {
+export default function AdminDashboard({
+  user,
+  theme,
+  onToggleTheme,
+  onLogout,
+  onNavigate,
+  activeItem = "dashboard",
+  currentPageTitle = "Admin Dashboard"
+}) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -78,10 +86,11 @@ export default function AdminDashboard({ user, theme, onToggleTheme, onLogout, o
         onToggleCollapse={() => setIsSidebarCollapsed((value) => !value)}
         onNavigate={onNavigate}
         onLogout={onLogout}
+        activeItem={activeItem}
       />
       <div className={styles.workspace}>
         <Navbar
-          currentPageTitle="Admin Dashboard"
+          currentPageTitle={currentPageTitle}
           user={user}
           theme={theme}
           searchValue={searchValue}

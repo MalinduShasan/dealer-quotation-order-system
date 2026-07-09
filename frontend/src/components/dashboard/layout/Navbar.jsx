@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./Navbar.module.css";
-import { BellIcon, MenuIcon, ProfileIcon, SearchIcon, SunMoonIcon } from "./dashboardIcons";
+import { BellIcon, MenuIcon, ProfileIcon, SearchIcon, SunMoonIcon } from "../dashboardIcons";
 
 export default function Navbar({
   currentPageTitle,

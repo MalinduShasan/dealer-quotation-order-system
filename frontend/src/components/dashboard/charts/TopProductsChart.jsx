@@ -1,5 +1,5 @@
 import styles from "./TopProductsChart.module.css";
-import shared from "./chartShared.module.css";
+import shared from "../shared/chartShared.module.css";
 
 export default function TopProductsChart({ data }) {
   const max = Math.max(...data.map((item) => item.value));

@@ -5,8 +5,27 @@ const { protect, adminOnly } = require("../middleware/authMiddleware");
 const { supabase, unwrap, unwrapSingle, mapUser } = require("../lib/supabaseUtils");
 
 const router = express.Router();
+const allowedRoles = ["admin", "manager", "sales_executive", "dealer"];
+const allowedStatuses = ["active", "inactive", "suspended"];
 
 const normalizeEmail = (email = "") => email.trim().toLowerCase();
+const normalizeText = (value = "") => value.trim();
+const serializeUser = (user) => {
+  const mappedUser = mapUser(user);
+
+  if (!mappedUser) return null;
+
+  return {
+    _id: mappedUser._id,
+    id: mappedUser.id,
+    name: mappedUser.name,
+    email: mappedUser.email,
+    role: mappedUser.role,
+    status: mappedUser.status,
+    createdAt: mappedUser.createdAt,
+    updatedAt: mappedUser.updatedAt
+  };
+};
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -108,14 +127,53 @@ router.post("/login", async (req, res) => {
 
 router.get("/", protect, adminOnly, async (req, res) => {
   try {
-    const users = await unwrap(
-      supabase
-        .from("users")
-        .select("id, name, email, role, status, created_at, updated_at")
-        .order("created_at", { ascending: false })
-    );
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), 100);
+    const search = normalizeText(req.query.search || "");
+    const role = req.query.role || "all";
+    const status = req.query.status || "all";
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
-    res.json(users.map(mapUser));
+    let query = supabase
+      .from("users")
+      .select("id, name, email, role, status, created_at, updated_at", { count: "exact" });
+
+    if (search) {
+      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+    }
+
+    if (role !== "all") {
+      if (!allowedRoles.includes(role)) {
+        return res.status(400).json({ message: "Invalid role filter" });
+      }
+      query = query.eq("role", role);
+    }
+
+    if (status !== "all") {
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status filter" });
+      }
+      query = query.eq("status", status);
+    }
+
+    const { data, error, count } = await query
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.json({
+      items: (data || []).map(serializeUser),
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        totalPages: Math.max(Math.ceil((count || 0) / limit), 1)
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -123,22 +181,33 @@ router.get("/", protect, adminOnly, async (req, res) => {
 
 router.post("/", protect, adminOnly, async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-
-    const allowedRoles = ["admin", "manager", "sales_executive", "dealer"];
-    const trimmedName = name?.trim();
+    const { name, email, password, role, status } = req.body;
+    const trimmedName = normalizeText(name);
     const normalizedEmail = normalizeEmail(email);
+    const normalizedStatus = status || "active";
 
-    if (!trimmedName || !normalizedEmail || !password || !role) {
-      return res.status(400).json({ message: "Name, email, password and role are required" });
+    if (!trimmedName || !normalizedEmail || !password || !role || !normalizedStatus) {
+      return res.status(400).json({ message: "Name, email, password, role and status are required" });
     }
 
     if (!allowedRoles.includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
     }
 
+    if (!allowedStatuses.includes(normalizedStatus)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
     if (password.length < 8) {
       return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
+    const existingUser = await unwrapSingle(
+      supabase.from("users").select("id").eq("email", normalizedEmail).maybeSingle()
+    );
+
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -151,13 +220,114 @@ router.post("/", protect, adminOnly, async (req, res) => {
           email: normalizedEmail,
           password: hashedPassword,
           role,
-          status: "active"
+          status: normalizedStatus
         })
         .select("id, name, email, role, status, created_at, updated_at")
         .single()
     );
 
-    res.status(201).json(mapUser(createdUser));
+    res.status(201).json(serializeUser(createdUser));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/:id", protect, adminOnly, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, password, role, status } = req.body;
+    const trimmedName = normalizeText(name);
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!trimmedName || !normalizedEmail || !role || !status) {
+      return res.status(400).json({ message: "Name, email, role and status are required" });
+    }
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    if (password && password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
+    const existingUser = await unwrapSingle(
+      supabase.from("users").select("id").eq("id", id).maybeSingle()
+    );
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const duplicateUser = await unwrapSingle(
+      supabase.from("users").select("id").eq("email", normalizedEmail).neq("id", id).maybeSingle()
+    );
+
+    if (duplicateUser) {
+      return res.status(400).json({ message: "Email address is already in use" });
+    }
+
+    const updates = {
+      name: trimmedName,
+      email: normalizedEmail,
+      role,
+      status,
+      updated_at: new Date().toISOString()
+    };
+
+    if (password) {
+      updates.password = await bcrypt.hash(password, 10);
+    }
+
+    const updatedUser = await unwrapSingle(
+      supabase
+        .from("users")
+        .update(updates)
+        .eq("id", id)
+        .select("id, name, email, role, status, created_at, updated_at")
+        .single()
+    );
+
+    res.json(serializeUser(updatedUser));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.patch("/:id/status", protect, adminOnly, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const existingUser = await unwrapSingle(
+      supabase.from("users").select("id").eq("id", id).maybeSingle()
+    );
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updatedUser = await unwrapSingle(
+      supabase
+        .from("users")
+        .update({
+          status,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", id)
+        .select("id, name, email, role, status, created_at, updated_at")
+        .single()
+    );
+
+    res.json(serializeUser(updatedUser));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,5 +1,5 @@
 import styles from "./QuotationChart.module.css";
-import shared from "./chartShared.module.css";
+import shared from "../shared/chartShared.module.css";
 
 export default function QuotationChart({ data }) {
   const total = data.reduce((sum, item) => sum + item.value, 0);

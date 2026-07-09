@@ -13,8 +13,8 @@ import {
   ReportsIcon,
   SettingsIcon,
   UsersIcon
-} from "./dashboardIcons";
-import { sidebarItems } from "./dashboardData";
+} from "../dashboardIcons";
+import { sidebarItems } from "../dashboardData";
 
 const iconMap = {
   dashboard: DashboardIcon,
@@ -31,7 +31,21 @@ const iconMap = {
   "audit-logs": AuditIcon
 };
 
-export default function Sidebar({ collapsed, mobileOpen, onCloseMobile, onToggleCollapse, onNavigate, onLogout }) {
+const routeMap = {
+  dashboard: "/dashboard",
+  users: "/users",
+  quotations: "/quotations"
+};
+
+export default function Sidebar({
+  collapsed,
+  mobileOpen,
+  onCloseMobile,
+  onToggleCollapse,
+  onNavigate,
+  onLogout,
+  activeItem = "dashboard"
+}) {
   return (
     <>
       <div className={`${styles.backdrop} ${mobileOpen ? styles.backdropVisible : ""}`} onClick={onCloseMobile} />
@@ -53,15 +67,16 @@ export default function Sidebar({ collapsed, mobileOpen, onCloseMobile, onToggle
         <nav className={styles.navList}>
           {sidebarItems.map((item) => {
             const Icon = iconMap[item.id];
-            const isActive = item.id === "dashboard";
+            const isActive = item.id === activeItem;
             return (
               <button
                 key={item.id}
                 type="button"
                 className={`${styles.navItem} ${isActive ? styles.active : ""}`}
                 onClick={() => {
-                  if (item.id === "dashboard") onNavigate("/dashboard");
-                  if (item.id === "quotations") onNavigate("/quotations");
+                  if (routeMap[item.id]) {
+                    onNavigate(routeMap[item.id]);
+                  }
                   onCloseMobile();
                 }}
               >

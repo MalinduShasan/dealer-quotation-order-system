@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Quotations from "./pages/Quotations";
+import UserManagement from "./pages/users/UserManagement";
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
@@ -38,6 +39,18 @@ function App() {
             element={
               <PrivateRoute role="dealer">
                 <Quotations />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/users"
+            element={
+              <PrivateRoute role="admin">
+                <UserManagement
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
               </PrivateRoute>
             }
           />

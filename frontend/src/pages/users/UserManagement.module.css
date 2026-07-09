@@ -1,0 +1,468 @@
+.heroCard,
+.toolbarCard,
+.tableCard,
+.modalCard,
+.confirmCard,
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.heroCard,
+.toolbarCard,
+.tableCard {
+  border-radius: 22px;
+}
+
+.heroCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 24px;
+}
+
+.sectionEyebrow {
+  margin: 0 0 10px;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.74rem;
+}
+
+.pageTitle,
+.sectionTitle,
+.modalTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.pageTitle {
+  font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+}
+
+.pageDescription,
+.sectionMeta,
+.confirmText,
+.emptyBlock p,
+.toast p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.heroMeta {
+  min-width: 260px;
+  display: grid;
+  gap: 14px;
+}
+
+.heroMetric {
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--bg-card-muted);
+  border: 1px solid var(--border-soft);
+}
+
+.heroMetric span,
+.inlineField label,
+.fieldLabel,
+.paginationMeta {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.heroMetric strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-transform: capitalize;
+}
+
+.toolbarCard,
+.tableHeader,
+.paginationRow,
+.modalHeader,
+.modalActions,
+.actionRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.toolbarCard {
+  padding: 18px 24px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.inlineField,
+.fieldGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.inlineField select,
+.fieldInput {
+  min-width: 180px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.inlineField select,
+.fieldInput[type="text"],
+.fieldInput[type="email"],
+.fieldInput[type="password"],
+.fieldInput select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.inlineField select option,
+.fieldInput option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.fieldInput {
+  width: 100%;
+}
+
+.inlineField select:focus,
+.fieldInput:focus {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-accent-ring);
+}
+
+.fieldInputError {
+  border-color: var(--accent-danger);
+}
+
+.fieldError {
+  color: var(--text-danger);
+  font-size: 0.82rem;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.actionButton,
+.modalCloseButton,
+.toast button {
+  border-radius: 14px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), border-color var(--transition-base), opacity var(--transition-base);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  padding: 12px 16px;
+}
+
+.primaryButton {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-accent-gradient);
+  color: var(--text-on-accent);
+}
+
+.secondaryButton,
+.modalCloseButton,
+.actionButton,
+.toast button {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.dangerButton,
+.actionDanger {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.actionSuccess {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-success-soft);
+  color: var(--text-success);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.dangerButton:hover,
+.actionButton:hover,
+.modalCloseButton:hover,
+.toast button:hover {
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.dangerButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tableCard {
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 820px;
+}
+
+.table th,
+.table td {
+  padding: 16px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-table);
+}
+
+.table th {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: var(--bg-card-muted);
+}
+
+.table td {
+  color: var(--text-primary);
+  vertical-align: top;
+}
+
+.userCell {
+  display: grid;
+  gap: 4px;
+}
+
+.userCell span {
+  color: var(--text-secondary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  border: 1px solid var(--border-soft);
+  text-transform: capitalize;
+}
+
+.roleBadge {
+  background: var(--bg-accent-soft);
+  color: var(--accent-primary);
+}
+
+.active {
+  background: var(--bg-success-soft);
+  color: var(--text-success);
+}
+
+.inactive {
+  background: var(--bg-warning-soft);
+  color: var(--text-warning);
+}
+
+.suspended {
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.actionRow {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  padding: 10px 12px;
+}
+
+.stateBlock,
+.errorBlock,
+.emptyBlock {
+  padding: 32px 24px;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.stateBlock,
+.emptyBlock {
+  background: var(--bg-card-muted);
+  border: 1px dashed var(--border-soft);
+  color: var(--text-secondary);
+}
+
+.errorBlock {
+  background: var(--bg-danger-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--text-danger);
+}
+
+.emptyBlock strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.paginationActions {
+  display: flex;
+  gap: 12px;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg-backdrop);
+}
+
+.modalCard,
+.confirmCard {
+  width: min(100%, 720px);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.confirmCard {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 18px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.formGrid .fieldGroup:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.modalActions {
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.toastStack {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 40;
+  display: grid;
+  gap: 12px;
+}
+
+.toast {
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.toast strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.toast button {
+  padding: 8px 10px;
+}
+
+.success {
+  border-color: var(--accent-success);
+}
+
+.error {
+  border-color: var(--accent-danger);
+}
+
+@media (max-width: 960px) {
+  .heroCard,
+  .toolbarCard,
+  .tableHeader,
+  .paginationRow,
+  .modalHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heroMeta,
+  .filterGroup {
+    width: 100%;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroCard,
+  .toolbarCard,
+  .tableCard,
+  .modalCard,
+  .confirmCard {
+    padding: 18px;
+  }
+
+  .paginationActions,
+  .modalActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .dangerButton {
+    width: 100%;
+  }
+
+  .toastStack {
+    left: 16px;
+    right: 16px;
+    top: 82px;
+  }
+
+  .toast {
+    width: 100%;
+  }
+}

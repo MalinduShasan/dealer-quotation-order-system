@@ -1,5 +1,5 @@
 import styles from "./DealerGrowthChart.module.css";
-import shared from "./chartShared.module.css";
+import shared from "../shared/chartShared.module.css";
 
 export default function DealerGrowthChart({ data }) {
   const max = Math.max(...data);

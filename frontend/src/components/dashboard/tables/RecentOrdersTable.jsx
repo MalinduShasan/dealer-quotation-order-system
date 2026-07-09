@@ -1,25 +1,24 @@
-import styles from "./RecentQuotationTable.module.css";
-import shared from "./tableShared.module.css";
+import shared from "../shared/tableShared.module.css";
+import styles from "./RecentOrdersTable.module.css";
 
-export default function RecentQuotationTable({ rows }) {
+export default function RecentOrdersTable({ rows }) {
   return (
     <article className={shared.card}>
       <div className={shared.header}>
         <div>
-          <p className={shared.eyebrow}>Recent Quotations</p>
-          <h3 className={shared.title}>Quotation Review Queue</h3>
+          <p className={shared.eyebrow}>Recent Orders</p>
+          <h3 className={shared.title}>Order Execution Desk</h3>
         </div>
       </div>
       <div className={shared.tableWrap}>
         <table className={shared.table}>
           <thead>
             <tr>
-              <th>Quotation Number</th>
+              <th>Order Number</th>
               <th>Dealer</th>
-              <th>Sales Executive</th>
               <th>Status</th>
               <th>Grand Total</th>
-              <th>Created Date</th>
+              <th>Order Date</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -28,16 +27,13 @@ export default function RecentQuotationTable({ rows }) {
               <tr key={row.number}>
                 <td>{row.number}</td>
                 <td>{row.dealer}</td>
-                <td>{row.executive}</td>
-                <td><span className={`${styles.badge} ${styles[row.status.replace(/\s+/g, "")] || styles.default}`}>{row.status}</span></td>
+                <td><span className={styles.status}>{row.status}</span></td>
                 <td>{row.total}</td>
                 <td>{row.date}</td>
                 <td>
                   <div className={styles.actions}>
                     <button type="button">View</button>
-                    <button type="button">Edit</button>
-                    <button type="button">Convert</button>
-                    <button type="button">Delete</button>
+                    <button type="button">Update</button>
                   </div>
                 </td>
               </tr>

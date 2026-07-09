@@ -1,5 +1,5 @@
 import styles from "./RevenueChart.module.css";
-import shared from "./chartShared.module.css";
+import shared from "../shared/chartShared.module.css";
 
 function createPath(values) {
   const max = Math.max(...values);

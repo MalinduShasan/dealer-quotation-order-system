@@ -1,4 +1,4 @@
-import shared from "./panelShared.module.css";
+import shared from "../shared/panelShared.module.css";
 import styles from "./SystemHealth.module.css";
 
 export default function SystemHealth({ items }) {
