@@ -10,7 +10,7 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
-export default function BrandTable({ brands, pagination, canManageBrands, onEdit, onToggleStatus }) {
+export default function BrandTable({ brands, pagination, canManageBrands, onEdit, onToggleStatus, onPreviewLogo }) {
   return (
     <>
       <div className={styles.tableWrap}>
@@ -29,7 +29,14 @@ export default function BrandTable({ brands, pagination, canManageBrands, onEdit
             {brands.map((brand) => (
               <tr key={brand.id}>
                 <td data-label="Logo">
-                  <BrandLogoPreview logoUrl={brand.logoUrl} alt={`${brand.name} logo`} size="small" />
+                  <BrandLogoPreview
+                    logoUrl={brand.logoUrl}
+                    alt={`${brand.name} logo`}
+                    size="thumbnail"
+                    interactive
+                    onClick={(event) => onPreviewLogo(brand, event.currentTarget)}
+                    title={`View ${brand.name} logo`}
+                  />
                 </td>
                 <td data-label="Name">
                   <div className={styles.primaryCell}>

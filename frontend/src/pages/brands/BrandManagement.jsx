@@ -16,6 +16,7 @@ import {
 } from "../../api/brandService";
 import { validateBrandLogoFile } from "../../utils/supabase";
 import BrandFormModal from "./components/BrandFormModal";
+import BrandLogoPreviewModal from "./components/BrandLogoPreviewModal";
 import BrandTable from "./components/BrandTable";
 
 const pageSize = 10;
@@ -100,6 +101,7 @@ export default function BrandManagement({ theme, onToggleTheme }) {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const previewUrlRef = useRef(null);
+  const previewTriggerRef = useRef(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -120,6 +122,7 @@ export default function BrandManagement({ theme, onToggleTheme }) {
   const [selectedLogoFile, setSelectedLogoFile] = useState(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState("");
   const [logoRemoved, setLogoRemoved] = useState(false);
+  const [previewBrand, setPreviewBrand] = useState(null);
 
   const summaryText = useMemo(() => (statusFilter === "all" ? "all brand statuses" : statusFilter), [statusFilter]);
   useEffect(() => {
@@ -177,6 +180,13 @@ export default function BrandManagement({ theme, onToggleTheme }) {
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const closePreviewModal = () => {
+    setPreviewBrand(null);
+    window.requestAnimationFrame(() => {
+      previewTriggerRef.current?.focus?.();
+    });
   };
 
   const pushToast = (type, title, message) => {
@@ -273,6 +283,11 @@ export default function BrandManagement({ theme, onToggleTheme }) {
     setPreviewObjectUrl(null);
   };
 
+  const openPreviewModal = (brand, triggerElement) => {
+    previewTriggerRef.current = triggerElement || null;
+    setPreviewBrand(brand);
+  };
+
   const closeModal = () => {
     if (submitting || logoUploading) return;
     setIsModalOpen(false);
@@ -296,6 +311,46 @@ export default function BrandManagement({ theme, onToggleTheme }) {
     }
 
     return brandRecord;
+  };
+
+  const handlePreviewLogoReplace = async (file) => {
+    const logoError = validateBrandLogoFile(file);
+    if (logoError) {
+      pushToast("error", "Invalid logo", logoError);
+      return;
+    }
+
+    if (!previewBrand) return;
+
+    setLogoUploading(true);
+
+    try {
+      const { data } = await uploadBrandLogo(user.token, previewBrand.id, file);
+      setPreviewBrand(data);
+      pushToast("success", "Logo updated", "The brand logo was updated successfully.");
+      await reloadBrands(pagination.page);
+    } catch (error) {
+      pushToast("error", "Upload failed", error.response?.data?.message || error.message || "Unable to upload logo");
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  const handlePreviewLogoRemove = async () => {
+    if (!previewBrand?.logoUrl) return;
+
+    setLogoUploading(true);
+
+    try {
+      const { data } = await deleteBrandLogo(user.token, previewBrand.id);
+      setPreviewBrand(data);
+      pushToast("success", "Logo removed", "The brand logo was removed successfully.");
+      await reloadBrands(pagination.page);
+    } catch (error) {
+      pushToast("error", "Remove failed", error.response?.data?.message || error.message || "Unable to remove logo");
+    } finally {
+      setLogoUploading(false);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -475,6 +530,7 @@ export default function BrandManagement({ theme, onToggleTheme }) {
                 canManageBrands={canManageBrands}
                 onEdit={openEditModal}
                 onToggleStatus={setConfirmBrand}
+                onPreviewLogo={openPreviewModal}
               />
             ) : null}
           </section>
@@ -505,6 +561,16 @@ export default function BrandManagement({ theme, onToggleTheme }) {
         submitting={submitting}
         onClose={() => setConfirmBrand(null)}
         onConfirm={handleToggleStatus}
+      />
+
+      <BrandLogoPreviewModal
+        brand={previewBrand}
+        isOpen={Boolean(previewBrand)}
+        canManage={canManageBrands}
+        loading={logoUploading}
+        onClose={closePreviewModal}
+        onReplaceLogo={handlePreviewLogoReplace}
+        onRemoveLogo={handlePreviewLogoRemove}
       />
 
       <ToastStack toasts={toasts} onDismiss={(toastId) => setToasts((current) => current.filter((toast) => toast.id !== toastId))} />

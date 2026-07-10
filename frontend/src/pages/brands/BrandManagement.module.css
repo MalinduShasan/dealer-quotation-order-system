@@ -306,10 +306,43 @@
   padding: 6px;
 }
 
+.logoPreviewThumbnail {
+  width: 56px;
+  height: 56px;
+  padding: 8px;
+  background: var(--bg-subtle);
+}
+
+.logoPreviewModal {
+  width: min(100%, 260px);
+  height: min(100%, 260px);
+  padding: 18px;
+  background: var(--bg-subtle);
+}
+
 .logoPreviewImage {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.logoPreviewButton {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.logoPreviewButton .logoPreviewFrame {
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.logoPreviewButton:hover .logoPreviewFrame,
+.logoPreviewButton:focus-visible .logoPreviewFrame {
+  transform: scale(1.03);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-soft);
 }
 
 .logoPreviewFallback {

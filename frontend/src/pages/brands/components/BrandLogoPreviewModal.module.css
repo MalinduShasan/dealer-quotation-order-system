@@ -1,0 +1,182 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg-backdrop);
+}
+
+.modalCard {
+  width: min(100%, 860px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.header,
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.74rem;
+}
+
+.title {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.previewPanel,
+.detailBlock,
+.metaCard {
+  border-radius: 20px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+}
+
+.previewPanel {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  padding: 24px;
+}
+
+.detailsPanel {
+  display: grid;
+  gap: 16px;
+}
+
+.detailBlock,
+.metaCard {
+  padding: 16px;
+}
+
+.detailLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.detailValue,
+.emptyText {
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.secondaryButton,
+.dangerButton,
+.closeButton {
+  border-radius: 14px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), border-color var(--transition-base), opacity var(--transition-base);
+}
+
+.secondaryButton,
+.dangerButton,
+.closeButton {
+  padding: 12px 16px;
+}
+
+.secondaryButton,
+.closeButton {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.dangerButton {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.secondaryButton:hover,
+.dangerButton:hover,
+.closeButton:hover {
+  transform: translateY(-1px);
+}
+
+.secondaryButton:disabled,
+.dangerButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .previewPanel {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 16px;
+  }
+
+  .modalCard {
+    padding: 18px;
+    max-height: calc(100vh - 32px);
+  }
+
+  .header,
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .metaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .secondaryButton,
+  .dangerButton,
+  .closeButton {
+    width: 100%;
+  }
+}
