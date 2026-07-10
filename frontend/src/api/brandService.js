@@ -19,3 +19,21 @@ export const updateBrand = (token, brandId, payload) => axios.put(`${API_URL}/br
 
 export const updateBrandStatus = (token, brandId, status) =>
   axios.patch(`${API_URL}/brands/${brandId}/status`, { status }, authConfig(token));
+
+export const uploadBrandLogo = (token, brandId, file) => {
+  const formData = new FormData();
+  formData.append("logo", file);
+
+  return axios.post(`${API_URL}/brands/${brandId}/logo`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+};
+
+export const deleteBrandLogo = (token, brandId) =>
+  axios.delete(`${API_URL}/brands/${brandId}/logo`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });

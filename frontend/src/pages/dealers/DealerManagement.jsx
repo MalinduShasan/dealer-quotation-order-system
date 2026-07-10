@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { EditIcon } from "../../components/dashboard/dashboardIcons";
 import Sidebar from "../../components/dashboard/layout/Sidebar";
 import Navbar from "../../components/dashboard/layout/Navbar";
 import DashboardFooter from "../../components/dashboard/DashboardFooter";
@@ -506,8 +507,14 @@ export default function DealerManagement({ theme, onToggleTheme }) {
                           </td>
                           <td>
                             <div className={styles.actionRow}>
-                              <button type="button" className={styles.actionButton} onClick={() => openEditModal(dealer)}>
-                                Edit
+                              <button
+                                type="button"
+                                className={styles.actionButton}
+                                onClick={() => openEditModal(dealer)}
+                                aria-label={`Edit ${dealer.companyName}`}
+                                title={`Edit ${dealer.companyName}`}
+                              >
+                                <EditIcon className={styles.actionIcon} />
                               </button>
                               <button
                                 type="button"

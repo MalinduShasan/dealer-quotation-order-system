@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { EditIcon } from "../../components/dashboard/dashboardIcons";
 import Sidebar from "../../components/dashboard/layout/Sidebar";
 import Navbar from "../../components/dashboard/layout/Navbar";
 import DashboardFooter from "../../components/dashboard/DashboardFooter";
@@ -951,8 +952,14 @@ export default function UserManagement({ theme, onToggleTheme }) {
                           <td data-label="Updated">{formatDate(entry.updatedAt)}</td>
                           <td data-label="Actions">
                             <div className={styles.actionRow}>
-                              <button type="button" className={styles.actionButton} onClick={() => openEditModal(entry)}>
-                                Edit
+                              <button
+                                type="button"
+                                className={styles.actionButton}
+                                onClick={() => openEditModal(entry)}
+                                aria-label={`Edit ${entry.name}`}
+                                title={`Edit ${entry.name}`}
+                              >
+                                <EditIcon className={styles.actionIcon} />
                               </button>
                               <button
                                 type="button"

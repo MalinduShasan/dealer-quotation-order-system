@@ -1,23 +1,36 @@
 const express = require("express");
 const { protect, allowRoles } = require("../middleware/authMiddleware");
 const { supabase, unwrapSingle } = require("../lib/supabaseUtils");
+const { brandLogoUpload } = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
 const allowedStatuses = ["active", "inactive"];
+const BRAND_LOGO_BUCKET = "brand-logos";
 
 const normalizeText = (value = "") => value.trim();
+const sanitizeFilename = (filename = "brand-logo") =>
+  filename
+    .toLowerCase()
+    .replace(/[^a-z0-9.-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "") || "brand-logo";
 
 const serializeBrand = (brand) => ({
   id: brand.id,
   name: brand.name,
   description: brand.description || "",
+  logoUrl: brand.logo_url || null,
+  logoPath: brand.logo_path || null,
   status: brand.status,
-  createdAt: brand.created_at
+  createdAt: brand.created_at,
+  updatedAt: brand.updated_at || null
 });
 
 const validateBrandPayload = async (payload, existingId = null) => {
   const name = normalizeText(payload.name);
   const description = normalizeText(payload.description);
+  const logoUrl = typeof payload.logoUrl === "string" ? payload.logoUrl.trim() : null;
+  const logoPath = typeof payload.logoPath === "string" ? payload.logoPath.trim() : null;
   const status = payload.status || "active";
   const errors = [];
 
@@ -55,8 +68,51 @@ const validateBrandPayload = async (payload, existingId = null) => {
     values: {
       name,
       description,
+      logo_url: logoUrl || null,
+      logo_path: logoPath || null,
       status
     }
+  };
+};
+
+const getBrandById = async (brandId) =>
+  unwrapSingle(
+    supabase
+      .from("brands")
+      .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
+      .eq("id", brandId)
+      .maybeSingle()
+  );
+
+const removeStorageObject = async (logoPath) => {
+  if (!logoPath) return;
+
+  const { error } = await supabase.storage.from(BRAND_LOGO_BUCKET).remove([logoPath]);
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+const uploadLogoToStorage = async (brandId, file) => {
+  const timestamp = Date.now();
+  const safeName = sanitizeFilename(file.originalname);
+  const logoPath = `${brandId}/${timestamp}-${safeName}`;
+
+  const { error } = await supabase.storage.from(BRAND_LOGO_BUCKET).upload(logoPath, file.buffer, {
+    contentType: file.mimetype,
+    cacheControl: "3600",
+    upsert: false
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const { data } = supabase.storage.from(BRAND_LOGO_BUCKET).getPublicUrl(logoPath);
+
+  return {
+    logoPath,
+    logoUrl: data?.publicUrl || null
   };
 };
 
@@ -75,7 +131,7 @@ router.get("/", protect, async (req, res) => {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    let query = supabase.from("brands").select("id, name, description, status, created_at", { count: "exact" });
+    let query = supabase.from("brands").select("id, name, description, logo_url, logo_path, status, created_at, updated_at", { count: "exact" });
 
     if (search) {
       query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
@@ -115,9 +171,7 @@ router.get("/:id", protect, async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const brand = await unwrapSingle(
-      supabase.from("brands").select("id, name, description, status, created_at").eq("id", req.params.id).maybeSingle()
-    );
+    const brand = await getBrandById(req.params.id);
 
     if (!brand) {
       return res.status(404).json({ message: "Brand not found" });
@@ -142,7 +196,14 @@ router.post("/", protect, allowRoles("admin"), async (req, res) => {
     }
 
     const createdBrand = await unwrapSingle(
-      supabase.from("brands").insert(values).select("id, name, description, status, created_at").single()
+      supabase
+        .from("brands")
+        .insert({
+          ...values,
+          updated_at: new Date().toISOString()
+        })
+        .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
+        .single()
     );
 
     res.status(201).json(serializeBrand(createdBrand));
@@ -166,7 +227,15 @@ router.put("/:id", protect, allowRoles("admin"), async (req, res) => {
     }
 
     const updatedBrand = await unwrapSingle(
-      supabase.from("brands").update(values).eq("id", req.params.id).select("id, name, description, status, created_at").single()
+      supabase
+        .from("brands")
+        .update({
+          ...values,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", req.params.id)
+        .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
+        .single()
     );
 
     res.json(serializeBrand(updatedBrand));
@@ -190,10 +259,123 @@ router.patch("/:id/status", protect, allowRoles("admin"), async (req, res) => {
     }
 
     const updatedBrand = await unwrapSingle(
-      supabase.from("brands").update({ status }).eq("id", req.params.id).select("id, name, description, status, created_at").single()
+      supabase
+        .from("brands")
+        .update({
+          status,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", req.params.id)
+        .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
+        .single()
     );
 
     res.json(serializeBrand(updatedBrand));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/:id/logo", protect, allowRoles("admin"), (req, res, next) => {
+  brandLogoUpload.single("logo")(req, res, (error) => {
+    if (error) {
+      return res.status(400).json({ message: error.message });
+    }
+    return next();
+  });
+}, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Logo file is required" });
+    }
+
+    const existingBrand = await getBrandById(req.params.id);
+
+    if (!existingBrand) {
+      return res.status(404).json({ message: "Brand not found" });
+    }
+
+    const uploadedLogo = await uploadLogoToStorage(existingBrand.id, req.file);
+
+    try {
+      const updatedBrand = await unwrapSingle(
+        supabase
+          .from("brands")
+          .update({
+            logo_url: uploadedLogo.logoUrl,
+            logo_path: uploadedLogo.logoPath,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", req.params.id)
+          .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
+          .single()
+      );
+
+      if (existingBrand.logo_path) {
+        try {
+          await removeStorageObject(existingBrand.logo_path);
+        } catch (storageError) {
+          return res.status(500).json({
+            message: `Logo saved but previous logo cleanup failed: ${storageError.message}`
+          });
+        }
+      }
+
+      return res.json(serializeBrand(updatedBrand));
+    } catch (dbError) {
+      try {
+        await removeStorageObject(uploadedLogo.logoPath);
+      } catch {
+        // Best-effort cleanup only.
+      }
+      throw dbError;
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.delete("/:id/logo", protect, allowRoles("admin"), async (req, res) => {
+  try {
+    const existingBrand = await getBrandById(req.params.id);
+
+    if (!existingBrand) {
+      return res.status(404).json({ message: "Brand not found" });
+    }
+
+    if (!existingBrand.logo_path) {
+      const clearedBrand = await unwrapSingle(
+        supabase
+          .from("brands")
+          .update({
+            logo_url: null,
+            logo_path: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", req.params.id)
+          .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
+          .single()
+      );
+
+      return res.json(serializeBrand(clearedBrand));
+    }
+
+    await removeStorageObject(existingBrand.logo_path);
+
+    const updatedBrand = await unwrapSingle(
+      supabase
+        .from("brands")
+        .update({
+          logo_url: null,
+          logo_path: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", req.params.id)
+        .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
+        .single()
+    );
+
+    return res.json(serializeBrand(updatedBrand));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

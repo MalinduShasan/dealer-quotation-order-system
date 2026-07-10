@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import Sidebar from "../../components/dashboard/layout/Sidebar";
@@ -6,9 +6,18 @@ import Navbar from "../../components/dashboard/layout/Navbar";
 import DashboardFooter from "../../components/dashboard/DashboardFooter";
 import shellStyles from "../../components/dashboard/AdminDashboard.module.css";
 import styles from "./BrandManagement.module.css";
-import { createBrand, getBrands, updateBrand, updateBrandStatus } from "../../api/brandService";
+import {
+  createBrand,
+  deleteBrandLogo,
+  getBrands,
+  updateBrand,
+  updateBrandStatus,
+  uploadBrandLogo
+} from "../../api/brandService";
+import { validateBrandLogoFile } from "../../utils/supabase";
+import BrandFormModal from "./components/BrandFormModal";
+import BrandTable from "./components/BrandTable";
 
-const statusOptions = ["active", "inactive"];
 const pageSize = 10;
 
 const initialFormState = {
@@ -16,14 +25,6 @@ const initialFormState = {
   description: "",
   status: "active"
 };
-
-function formatDate(value) {
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  }).format(new Date(value));
-}
 
 function validateForm(values) {
   const errors = {};
@@ -67,90 +68,6 @@ function ToastStack({ toasts, onDismiss }) {
   );
 }
 
-function BrandFormModal({ isOpen, mode, values, errors, submitting, onChange, onClose, onSubmit }) {
-  if (!isOpen) return null;
-
-  return (
-    <div className={styles.modalOverlay} role="presentation">
-      <div className={styles.modalCard} role="dialog" aria-modal="true" aria-labelledby="brand-modal-title">
-        <div className={styles.modalHeader}>
-          <div>
-            <p className={styles.sectionEyebrow}>{mode === "edit" ? "Update Brand" : "New Brand"}</p>
-            <h2 id="brand-modal-title" className={styles.modalTitle}>
-              {mode === "edit" ? "Edit brand" : "Add brand"}
-            </h2>
-          </div>
-          <button type="button" className={styles.modalCloseButton} onClick={onClose}>
-            Close
-          </button>
-        </div>
-
-        <form className={styles.formGrid} onSubmit={onSubmit}>
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel} htmlFor="brand-name">
-              Name
-            </label>
-            <input
-              id="brand-name"
-              name="name"
-              className={`${styles.fieldInput} ${errors.name ? styles.fieldInputError : ""}`}
-              value={values.name}
-              onChange={onChange}
-              placeholder="Brand name"
-            />
-            {errors.name ? <span className={styles.fieldError}>{errors.name}</span> : null}
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel} htmlFor="brand-status">
-              Status
-            </label>
-            <select
-              id="brand-status"
-              name="status"
-              className={`${styles.fieldInput} ${errors.status ? styles.fieldInputError : ""}`}
-              value={values.status}
-              onChange={onChange}
-            >
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-            {errors.status ? <span className={styles.fieldError}>{errors.status}</span> : null}
-          </div>
-
-          <div className={`${styles.fieldGroup} ${styles.fieldGroupWide}`}>
-            <label className={styles.fieldLabel} htmlFor="brand-description">
-              Description
-            </label>
-            <textarea
-              id="brand-description"
-              name="description"
-              className={`${styles.fieldInput} ${styles.textArea} ${errors.description ? styles.fieldInputError : ""}`}
-              value={values.description}
-              onChange={onChange}
-              placeholder="Brand description"
-              rows={5}
-            />
-            {errors.description ? <span className={styles.fieldError}>{errors.description}</span> : null}
-          </div>
-
-          <div className={styles.modalActions}>
-            <button type="button" className={styles.secondaryButton} onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className={styles.primaryButton} disabled={submitting}>
-              {submitting ? "Saving..." : mode === "edit" ? "Save Changes" : "Create Brand"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 function ConfirmDialog({ isOpen, brand, submitting, onClose, onConfirm }) {
   if (!isOpen || !brand) return null;
 
@@ -182,6 +99,7 @@ function ConfirmDialog({ isOpen, brand, submitting, onClose, onConfirm }) {
 export default function BrandManagement({ theme, onToggleTheme }) {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const previewUrlRef = useRef(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -195,12 +113,15 @@ export default function BrandManagement({ theme, onToggleTheme }) {
   const [formValues, setFormValues] = useState(initialFormState);
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
   const [editingBrand, setEditingBrand] = useState(null);
   const [confirmBrand, setConfirmBrand] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [selectedLogoFile, setSelectedLogoFile] = useState(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState("");
+  const [logoRemoved, setLogoRemoved] = useState(false);
 
   const summaryText = useMemo(() => (statusFilter === "all" ? "all brand statuses" : statusFilter), [statusFilter]);
-
   useEffect(() => {
     const loadBrands = async () => {
       if (!user?.token) return;
@@ -245,6 +166,14 @@ export default function BrandManagement({ theme, onToggleTheme }) {
     return () => window.clearTimeout(timer);
   }, [toasts]);
 
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -255,6 +184,29 @@ export default function BrandManagement({ theme, onToggleTheme }) {
       ...current,
       { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, type, title, message }
     ]);
+  };
+
+  const setPreviewObjectUrl = (file) => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+
+    if (!file) {
+      setLogoPreviewUrl("");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    previewUrlRef.current = objectUrl;
+    setLogoPreviewUrl(objectUrl);
+  };
+
+  const resetLogoState = () => {
+    setSelectedLogoFile(null);
+    setLogoRemoved(false);
+    setFormErrors((current) => ({ ...current, logo: "" }));
+    setPreviewObjectUrl(null);
   };
 
   const reloadBrands = async (targetPage = pagination.page) => {
@@ -277,6 +229,7 @@ export default function BrandManagement({ theme, onToggleTheme }) {
     setEditingBrand(null);
     setFormValues(initialFormState);
     setFormErrors({});
+    resetLogoState();
     setIsModalOpen(true);
   };
 
@@ -289,6 +242,8 @@ export default function BrandManagement({ theme, onToggleTheme }) {
       status: brand.status || "active"
     });
     setFormErrors({});
+    resetLogoState();
+    setLogoPreviewUrl(brand.logoUrl || "");
     setIsModalOpen(true);
   };
 
@@ -298,20 +253,62 @@ export default function BrandManagement({ theme, onToggleTheme }) {
     setFormErrors((current) => ({ ...current, [name]: "" }));
   };
 
+  const handleLogoSelect = (file) => {
+    const logoError = validateBrandLogoFile(file);
+    if (logoError) {
+      setFormErrors((current) => ({ ...current, logo: logoError }));
+      return;
+    }
+
+    setSelectedLogoFile(file);
+    setLogoRemoved(false);
+    setFormErrors((current) => ({ ...current, logo: "" }));
+    setPreviewObjectUrl(file);
+  };
+
+  const handleLogoRemove = () => {
+    setSelectedLogoFile(null);
+    setLogoRemoved(true);
+    setFormErrors((current) => ({ ...current, logo: "" }));
+    setPreviewObjectUrl(null);
+  };
+
   const closeModal = () => {
-    if (submitting) return;
+    if (submitting || logoUploading) return;
     setIsModalOpen(false);
     setEditingBrand(null);
     setFormErrors({});
-    if (modalMode !== "edit") {
-      setFormValues(initialFormState);
+    setFormValues(initialFormState);
+    resetLogoState();
+  };
+
+  const syncBrandLogo = async (brandRecord) => {
+    if (selectedLogoFile) {
+      setLogoUploading(true);
+      const { data } = await uploadBrandLogo(user.token, brandRecord.id, selectedLogoFile);
+      return data;
     }
+
+    if (logoRemoved && brandRecord.logoUrl) {
+      setLogoUploading(true);
+      const { data } = await deleteBrandLogo(user.token, brandRecord.id);
+      return data;
+    }
+
+    return brandRecord;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const errors = validateForm(formValues);
+    if (selectedLogoFile) {
+      const logoError = validateBrandLogoFile(selectedLogoFile);
+      if (logoError) {
+        errors.logo = logoError;
+      }
+    }
+
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -327,22 +324,36 @@ export default function BrandManagement({ theme, onToggleTheme }) {
         status: formValues.status
       };
 
+      let savedBrand;
+
       if (modalMode === "edit" && editingBrand) {
-        await updateBrand(user.token, editingBrand.id, payload);
-        pushToast("success", "Brand updated", "The brand was updated successfully.");
+        const { data } = await updateBrand(user.token, editingBrand.id, payload);
+        savedBrand = data;
       } else {
-        await createBrand(user.token, payload);
-        pushToast("success", "Brand created", "A new brand has been added.");
+        const { data } = await createBrand(user.token, payload);
+        savedBrand = data;
       }
+
+      if (selectedLogoFile || (logoRemoved && editingBrand?.logoUrl)) {
+        await syncBrandLogo(savedBrand);
+      }
+
+      pushToast(
+        "success",
+        modalMode === "edit" ? "Brand updated" : "Brand created",
+        modalMode === "edit" ? "The brand was updated successfully." : "A new brand has been added."
+      );
 
       setIsModalOpen(false);
       setEditingBrand(null);
       setFormValues(initialFormState);
+      resetLogoState();
       await reloadBrands(modalMode === "create" ? 1 : pagination.page);
     } catch (error) {
-      pushToast("error", "Save failed", error.response?.data?.message || "Unable to save brand");
+      pushToast("error", "Save failed", error.response?.data?.message || error.message || "Unable to save brand");
     } finally {
       setSubmitting(false);
+      setLogoUploading(false);
     }
   };
 
@@ -421,11 +432,8 @@ export default function BrandManagement({ theme, onToggleTheme }) {
                 <label htmlFor="brandStatusFilter">Status</label>
                 <select id="brandStatusFilter" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
                   <option value="all">All statuses</option>
-                  {statusOptions.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
                 </select>
               </div>
             </div>
@@ -458,80 +466,16 @@ export default function BrandManagement({ theme, onToggleTheme }) {
             ) : null}
 
             {!loading && !tableError && brands.length > 0 ? (
-              <>
-                <div className={styles.tableWrap}>
-                  <table className={styles.table}>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Created Date</th>
-                        {canManageBrands ? <th>Actions</th> : null}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {brands.map((brand) => (
-                        <tr key={brand.id}>
-                          <td data-label="Name">
-                            <div className={styles.primaryCell}>
-                              <strong>{brand.name}</strong>
-                            </div>
-                          </td>
-                          <td data-label="Description">
-                            <span className={styles.descriptionText}>{brand.description || "No description"}</span>
-                          </td>
-                          <td data-label="Status">
-                            <span className={`${styles.badge} ${styles[brand.status]}`}>{brand.status}</span>
-                          </td>
-                          <td data-label="Created Date">{formatDate(brand.createdAt)}</td>
-                          {canManageBrands ? (
-                            <td data-label="Actions">
-                              <div className={styles.actionRow}>
-                                <button type="button" className={styles.actionButton} onClick={() => openEditModal(brand)}>
-                                  Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  className={`${styles.actionButton} ${brand.status === "active" ? styles.actionDanger : styles.actionSuccess}`}
-                                  onClick={() => setConfirmBrand(brand)}
-                                >
-                                  {brand.status === "active" ? "Deactivate" : "Activate"}
-                                </button>
-                              </div>
-                            </td>
-                          ) : null}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className={styles.paginationRow}>
-                  <p className={styles.paginationMeta}>
-                    {(pagination.page - 1) * pagination.limit + 1}-{Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-                    {pagination.total} brands
-                  </p>
-                  <div className={styles.paginationActions}>
-                    <button
-                      type="button"
-                      className={styles.secondaryButton}
-                      disabled={pagination.page <= 1}
-                      onClick={() => setPagination((current) => ({ ...current, page: current.page - 1 }))}
-                    >
-                      Previous
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.secondaryButton}
-                      disabled={pagination.page >= pagination.totalPages}
-                      onClick={() => setPagination((current) => ({ ...current, page: current.page + 1 }))}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              </>
+              <BrandTable
+                brands={brands}
+                pagination={{
+                  ...pagination,
+                  onPageChange: (page) => setPagination((current) => ({ ...current, page }))
+                }}
+                canManageBrands={canManageBrands}
+                onEdit={openEditModal}
+                onToggleStatus={setConfirmBrand}
+              />
             ) : null}
           </section>
         </main>
@@ -545,7 +489,12 @@ export default function BrandManagement({ theme, onToggleTheme }) {
         values={formValues}
         errors={formErrors}
         submitting={submitting}
+        logoPreviewUrl={logoPreviewUrl || (logoRemoved ? "" : editingBrand?.logoUrl || "")}
+        hasExistingLogo={Boolean(editingBrand?.logoUrl) && !logoRemoved}
+        logoUploading={logoUploading}
         onChange={handleFormChange}
+        onLogoSelect={handleLogoSelect}
+        onLogoRemove={handleLogoRemove}
         onClose={closeModal}
         onSubmit={handleSubmit}
       />

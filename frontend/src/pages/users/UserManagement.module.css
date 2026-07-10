@@ -335,6 +335,12 @@
   padding: 10px 12px;
 }
 
+.actionIcon {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}
+
 .profileCell {
   display: grid;
   gap: 8px;
