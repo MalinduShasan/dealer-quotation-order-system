@@ -35,6 +35,7 @@ const routeMap = {
   dashboard: "/dashboard",
   users: "/users",
   dealers: "/dealers",
+  categories: "/categories",
   quotations: "/quotations"
 };
 

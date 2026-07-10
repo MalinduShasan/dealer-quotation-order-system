@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Quotations from "./pages/Quotations";
 import UserManagement from "./pages/users/UserManagement";
 import DealerManagement from "./pages/dealers/DealerManagement";
+import CategoryManagement from "./pages/categories/CategoryManagement";
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
@@ -61,6 +62,18 @@ function App() {
             element={
               <PrivateRoute role={["admin", "manager"]}>
                 <DealerManagement
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/categories"
+            element={
+              <PrivateRoute role={["admin", "manager", "sales_executive"]}>
+                <CategoryManagement
                   theme={theme}
                   onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
                 />
