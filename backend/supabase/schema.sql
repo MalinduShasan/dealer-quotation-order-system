@@ -57,6 +57,8 @@ create table if not exists public.products (
   sku text not null unique,
   name text not null,
   description text default '',
+  image_url text,
+  image_path text,
   category_id uuid references public.categories(id) on delete set null,
   brand_id uuid references public.brands(id) on delete set null,
   unit_price numeric(12,2) not null check (unit_price >= 0),

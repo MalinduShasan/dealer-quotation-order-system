@@ -37,6 +37,7 @@ const routeMap = {
   dealers: "/dealers",
   categories: "/categories",
   brands: "/brands",
+  products: "/products",
   quotations: "/quotations"
 };
 

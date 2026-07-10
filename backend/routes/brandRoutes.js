@@ -1,6 +1,6 @@
 const express = require("express");
 const { protect, allowRoles } = require("../middleware/authMiddleware");
-const { supabase, unwrapSingle } = require("../lib/supabaseUtils");
+const { supabase, unwrapSingle, getActorId } = require("../lib/supabaseUtils");
 const { brandLogoUpload } = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
@@ -51,7 +51,7 @@ const validateBrandPayload = async (payload, existingId = null) => {
   }
 
   if (name) {
-    let duplicateQuery = supabase.from("brands").select("id, name").ilike("name", name).maybeSingle();
+    let duplicateQuery = supabase.from("brands").select("id, name").ilike("name", name).is("deleted_at", null).maybeSingle();
 
     if (existingId) {
       duplicateQuery = duplicateQuery.neq("id", existingId);
@@ -81,6 +81,7 @@ const getBrandById = async (brandId) =>
       .from("brands")
       .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
       .eq("id", brandId)
+      .is("deleted_at", null)
       .maybeSingle()
   );
 
@@ -131,7 +132,7 @@ router.get("/", protect, async (req, res) => {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    let query = supabase.from("brands").select("id, name, description, logo_url, logo_path, status, created_at, updated_at", { count: "exact" });
+    let query = supabase.from("brands").select("id, name, description, logo_url, logo_path, status, created_at, updated_at", { count: "exact" }).is("deleted_at", null);
 
     if (search) {
       query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
@@ -200,7 +201,9 @@ router.post("/", protect, allowRoles("admin"), async (req, res) => {
         .from("brands")
         .insert({
           ...values,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          created_by: getActorId(req.user),
+          updated_by: getActorId(req.user)
         })
         .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
         .single()
@@ -214,7 +217,7 @@ router.post("/", protect, allowRoles("admin"), async (req, res) => {
 
 router.put("/:id", protect, allowRoles("admin"), async (req, res) => {
   try {
-    const existingBrand = await unwrapSingle(supabase.from("brands").select("id").eq("id", req.params.id).maybeSingle());
+    const existingBrand = await unwrapSingle(supabase.from("brands").select("id").eq("id", req.params.id).is("deleted_at", null).maybeSingle());
 
     if (!existingBrand) {
       return res.status(404).json({ message: "Brand not found" });
@@ -231,7 +234,8 @@ router.put("/:id", protect, allowRoles("admin"), async (req, res) => {
         .from("brands")
         .update({
           ...values,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: getActorId(req.user)
         })
         .eq("id", req.params.id)
         .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
@@ -252,7 +256,7 @@ router.patch("/:id/status", protect, allowRoles("admin"), async (req, res) => {
       return res.status(400).json({ message: "Invalid brand status" });
     }
 
-    const existingBrand = await unwrapSingle(supabase.from("brands").select("id").eq("id", req.params.id).maybeSingle());
+    const existingBrand = await unwrapSingle(supabase.from("brands").select("id").eq("id", req.params.id).is("deleted_at", null).maybeSingle());
 
     if (!existingBrand) {
       return res.status(404).json({ message: "Brand not found" });
@@ -263,7 +267,8 @@ router.patch("/:id/status", protect, allowRoles("admin"), async (req, res) => {
         .from("brands")
         .update({
           status,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: getActorId(req.user)
         })
         .eq("id", req.params.id)
         .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
@@ -304,7 +309,8 @@ router.post("/:id/logo", protect, allowRoles("admin"), (req, res, next) => {
           .update({
             logo_url: uploadedLogo.logoUrl,
             logo_path: uploadedLogo.logoPath,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: getActorId(req.user)
           })
           .eq("id", req.params.id)
           .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
@@ -350,7 +356,8 @@ router.delete("/:id/logo", protect, allowRoles("admin"), async (req, res) => {
           .update({
             logo_url: null,
             logo_path: null,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: getActorId(req.user)
           })
           .eq("id", req.params.id)
           .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")
@@ -368,7 +375,8 @@ router.delete("/:id/logo", protect, allowRoles("admin"), async (req, res) => {
         .update({
           logo_url: null,
           logo_path: null,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: getActorId(req.user)
         })
         .eq("id", req.params.id)
         .select("id, name, description, logo_url, logo_path, status, created_at, updated_at")

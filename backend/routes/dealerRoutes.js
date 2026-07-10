@@ -5,6 +5,7 @@ const {
   unwrap,
   unwrapSingle,
   mapDealer,
+  getActorId,
   mapQuotationWithItems
 } = require("../lib/supabaseUtils");
 
@@ -74,7 +75,7 @@ const validateDealerPayload = async (payload, existingId = null) => {
 
   if (userId) {
     const dealerUser = await unwrapSingle(
-      supabase.from("users").select("id, role").eq("id", userId).maybeSingle()
+      supabase.from("users").select("id, role").eq("id", userId).is("deleted_at", null).maybeSingle()
     );
 
     if (!dealerUser) {
@@ -83,7 +84,7 @@ const validateDealerPayload = async (payload, existingId = null) => {
       errors.push("Selected user must have dealer role");
     }
 
-    const duplicateLinkedProfileQuery = supabase.from("dealers").select("id").eq("user_id", userId);
+    const duplicateLinkedProfileQuery = supabase.from("dealers").select("id").eq("user_id", userId).is("deleted_at", null);
     if (existingId) {
       duplicateLinkedProfileQuery.neq("id", existingId);
     }
@@ -93,9 +94,9 @@ const validateDealerPayload = async (payload, existingId = null) => {
     }
   }
 
-  const duplicateEmailQuery = supabase.from("dealers").select("id").eq("email", email);
+  const duplicateEmailQuery = supabase.from("dealers").select("id").eq("email", email).is("deleted_at", null);
   const duplicateDealerCodeQuery = payload.dealer_code
-    ? supabase.from("dealers").select("id").eq("dealer_code", payload.dealer_code)
+    ? supabase.from("dealers").select("id").eq("dealer_code", payload.dealer_code).is("deleted_at", null)
     : null;
 
   if (existingId) {
@@ -140,6 +141,7 @@ const generateDealerCode = async () => {
       .from("dealers")
       .select("dealer_code")
       .ilike("dealer_code", `${prefix}%`)
+      .is("deleted_at", null)
       .order("dealer_code", { ascending: false })
       .limit(1)
       .maybeSingle()
@@ -161,7 +163,7 @@ router.get("/", protect, managerAccess, async (req, res) => {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    let query = supabase.from("dealers").select(dealerSelect, { count: "exact" });
+    let query = supabase.from("dealers").select(dealerSelect, { count: "exact" }).is("deleted_at", null);
 
     if (search) {
       query = query.or(
@@ -210,7 +212,8 @@ router.post("/", protect, managerAccess, async (req, res) => {
         .from("dealers")
         .insert({
           ...values,
-          dealer_code: dealerCode
+          dealer_code: dealerCode,
+          created_by: getActorId(req.user)
         })
         .select(dealerSelect)
         .single()
@@ -225,7 +228,7 @@ router.post("/", protect, managerAccess, async (req, res) => {
 router.put("/:id", protect, managerAccess, async (req, res) => {
   try {
     const existingDealer = await unwrapSingle(
-      supabase.from("dealers").select("id").eq("id", req.params.id).maybeSingle()
+      supabase.from("dealers").select("id").eq("id", req.params.id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingDealer) {
@@ -244,7 +247,8 @@ router.put("/:id", protect, managerAccess, async (req, res) => {
         .update({
           ...values,
           dealer_code: values.dealer_code || req.body.dealer_code || undefined,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: getActorId(req.user)
         })
         .eq("id", req.params.id)
         .select(dealerSelect)
@@ -266,7 +270,7 @@ router.patch("/:id/status", protect, managerAccess, async (req, res) => {
     }
 
     const existingDealer = await unwrapSingle(
-      supabase.from("dealers").select("id").eq("id", req.params.id).maybeSingle()
+      supabase.from("dealers").select("id").eq("id", req.params.id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingDealer) {
@@ -278,7 +282,8 @@ router.patch("/:id/status", protect, managerAccess, async (req, res) => {
         .from("dealers")
         .update({
           status,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: getActorId(req.user)
         })
         .eq("id", req.params.id)
         .select(dealerSelect)
@@ -313,7 +318,7 @@ router.get("/quotations/pending", protect, dealerOnly, loadPendingQuotations);
 router.get("/:id", protect, managerAccess, async (req, res) => {
   try {
     const dealer = await unwrapSingle(
-      supabase.from("dealers").select(dealerSelect).eq("id", req.params.id).maybeSingle()
+      supabase.from("dealers").select(dealerSelect).eq("id", req.params.id).is("deleted_at", null).maybeSingle()
     );
 
     if (!dealer) {

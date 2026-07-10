@@ -32,3 +32,9 @@ export const TrendUpIcon = createIcon(<><path d="m3 17 6-6 4 4 7-8" /><path d="M
 export const TrendDownIcon = createIcon(<><path d="m3 7 6 6 4-4 7 8" /><path d="M14 17h6v-6" /></>);
 export const WarningIcon = createIcon(<><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" /><path d="M12 9v4" /><path d="M12 17h.01" /></>);
 export const EditIcon = createIcon(<><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4Z" /></>);
+export const CheckCircleIcon = createIcon(<><circle cx="12" cy="12" r="9" /><path d="m9 12 2 2 4-4" /></>);
+export const XCircleIcon = createIcon(<><circle cx="12" cy="12" r="9" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></>);
+export const GridIcon = createIcon(<><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></>);
+export const TableIcon = createIcon(<><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 10h18" /><path d="M9 4v16" /><path d="M15 4v16" /></>);
+export const ArrowLeftIcon = createIcon(<><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></>);
+export const EyeIcon = createIcon(<><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></>);

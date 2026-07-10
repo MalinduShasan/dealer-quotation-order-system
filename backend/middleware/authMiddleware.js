@@ -17,6 +17,7 @@ const protect = async (req, res, next) => {
         .from("users")
         .select("id, name, email, role, status, created_at, updated_at")
         .eq("id", decoded.id)
+        .is("deleted_at", null)
         .maybeSingle()
     );
 

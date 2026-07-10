@@ -1,0 +1,1109 @@
+.heroCard,
+.toolbarCard,
+.tableCard,
+.modalCard,
+.confirmCard,
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.heroCard,
+.toolbarCard,
+.tableCard,
+.modalCard,
+.confirmCard {
+  border-radius: 22px;
+  min-width: 0;
+}
+
+.heroCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+.sectionEyebrow {
+  margin: 0 0 10px;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.74rem;
+}
+
+.pageTitle,
+.sectionTitle,
+.modalTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.pageTitle {
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  line-height: 1.25;
+  max-width: 760px;
+}
+
+.pageDescription,
+.sectionMeta,
+.confirmText,
+.emptyBlock p,
+.toast p,
+.helperText,
+.detailsText {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.heroMeta {
+  min-width: 260px;
+  display: grid;
+  gap: 14px;
+}
+
+.heroMetric {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: var(--bg-card-muted);
+  border: 1px solid var(--border-soft);
+}
+
+.heroMetric span,
+.inlineField label,
+.fieldLabel,
+.paginationMeta,
+.detailsLabel,
+.pricingLabel,
+.inventoryLabel,
+.productSubtle,
+.productSku {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.heroMetric strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-transform: capitalize;
+}
+
+.toolbarCard,
+.tableHeader,
+.paginationRow,
+.modalHeader,
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.toolbarCard {
+  padding: 20px 24px;
+}
+
+.filtersToolbar {
+  width: 100%;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.filtersMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.filtersActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 46px;
+  max-width: 100%;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  align-items: end;
+  min-width: 0;
+}
+
+.searchField {
+  grid-column: span 2;
+}
+
+.checkboxField {
+  align-self: end;
+}
+
+.inlineField,
+.fieldGroup {
+  display: grid;
+  gap: 8px;
+  align-content: end;
+}
+
+.fieldGroupWide {
+  grid-column: 1 / -1;
+}
+
+.inlineField select,
+.fieldInput,
+.checkboxLabel {
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  min-height: 46px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.checkboxLabel input {
+  margin: 0;
+}
+
+.inlineField select option,
+.fieldInput option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.fieldInput {
+  width: 100%;
+}
+
+.fieldInput:focus,
+.inlineField select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-accent-ring);
+}
+
+.fieldInputError {
+  border-color: var(--accent-danger);
+}
+
+.fieldError {
+  color: var(--text-danger);
+  font-size: 0.82rem;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.textArea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.actionButton,
+.modalCloseButton,
+.toast button,
+.viewButton {
+  border-radius: 14px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), border-color var(--transition-base), opacity var(--transition-base), background var(--transition-base);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.viewButton {
+  padding: 12px 16px;
+}
+
+.primaryButton {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-accent-gradient);
+  color: var(--text-on-accent);
+}
+
+.secondaryButton,
+.modalCloseButton,
+.actionButton,
+.toast button,
+.viewButton {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.dangerButton {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.dangerButton:hover,
+.actionButton:hover,
+.modalCloseButton:hover,
+.toast button:hover,
+.viewButton:hover,
+.imagePreviewButton:hover .imagePreviewFrame,
+.imagePreviewButton:focus-visible .imagePreviewFrame {
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.dangerButton:disabled,
+.actionButton:disabled,
+.viewButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tableCard {
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.viewToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+  max-width: 100%;
+}
+
+.viewToggleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.viewToggleActive {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-soft);
+}
+
+.viewToggleIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.tableWrap {
+  overflow: visible;
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  background: var(--bg-card);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.productColumn {
+  width: 35%;
+}
+
+.pricingColumn {
+  width: 18%;
+}
+
+.inventoryColumn {
+  width: 18%;
+}
+
+.statusColumn {
+  width: 12%;
+}
+
+.createdColumn {
+  width: 130px;
+}
+
+.actionsColumn {
+  width: 190px;
+}
+
+.table th,
+.table td {
+  padding: 20px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-table);
+}
+
+.table th {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: var(--bg-card-muted);
+}
+
+.table td {
+  color: var(--text-primary);
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.table td:nth-child(5) {
+  min-width: 130px;
+}
+
+.table td:nth-child(6) {
+  min-width: 190px;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table td::before {
+  content: none;
+}
+
+.productRow {
+  transition: background var(--transition-base);
+  min-height: 110px;
+}
+
+.productRow:hover {
+  background: var(--bg-card-muted);
+}
+
+.productCardCell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.productMeta {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.productName {
+  color: var(--text-primary);
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.productSku {
+  font-weight: 600;
+}
+
+.productSubtle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pricingCell,
+.inventoryCell {
+  display: grid;
+  gap: 10px;
+}
+
+.pricingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.pricingValue,
+.inventoryValue,
+.detailsValue {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.inventoryStats {
+  display: grid;
+  gap: 8px;
+}
+
+.inventoryMetric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventoryBadge,
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  border: 1px solid var(--border-soft);
+  font-weight: 600;
+  text-transform: capitalize;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.inventoryHealthy {
+  background: var(--bg-success-soft);
+  color: var(--text-success);
+}
+
+.inventoryLow,
+.inactive {
+  background: var(--bg-warning-soft);
+  color: var(--text-warning);
+}
+
+.inventoryOut,
+.outOfStock {
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.inventoryIcon,
+.actionIcon {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}
+
+.active {
+  background: var(--bg-success-soft);
+  color: var(--text-success);
+}
+
+.createdText {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.actionsShell {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.actionButton {
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.viewButton {
+  flex: 0 0 auto;
+}
+
+.actionsMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 190px;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 4px;
+  z-index: 5;
+}
+
+.actionsMenuItem {
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.actionsMenuItem:hover {
+  background: var(--bg-card-muted);
+}
+
+.actionsMenuItemDisabled {
+  color: var(--text-muted);
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.stateBlock,
+.errorBlock,
+.emptyBlock {
+  padding: 32px 24px;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.stateBlock,
+.emptyBlock {
+  background: var(--bg-card-muted);
+  border: 1px dashed var(--border-soft);
+  color: var(--text-secondary);
+}
+
+.errorBlock {
+  background: var(--bg-danger-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--text-danger);
+}
+
+.emptyBlock strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.paginationActions {
+  display: flex;
+  gap: 12px;
+}
+
+.modalOverlay,
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  padding: 24px;
+  background: var(--bg-backdrop);
+}
+
+.modalOverlay {
+  display: grid;
+  place-items: center;
+}
+
+.modalCard,
+.confirmCard {
+  width: min(100%, 960px);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.modalCard {
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.confirmCard {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 18px;
+}
+
+.formGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.modalActions {
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  margin-top: 8px;
+  position: sticky;
+  bottom: 0;
+  padding-top: 16px;
+  background: var(--bg-card);
+}
+
+.drawerOverlay {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.detailsDrawer {
+  width: min(560px, 100%);
+  height: calc(100vh - 48px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.drawerHeader,
+.drawerActions {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-table);
+}
+
+.drawerActions {
+  border-top: 1px solid var(--border-table);
+  border-bottom: 0;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.drawerContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.detailsMediaPanel,
+.detailsSection {
+  border-radius: 20px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+  padding: 20px;
+}
+
+.detailsMediaPanel {
+  display: grid;
+  place-items: center;
+}
+
+.detailsSection h3 {
+  margin: 0 0 14px;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.detailsStack {
+  display: grid;
+  gap: 14px;
+}
+
+.detailsItem {
+  display: grid;
+  gap: 6px;
+}
+
+.detailsText,
+.detailsValue {
+  word-break: break-word;
+}
+
+.toastStack {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 40;
+  display: grid;
+  gap: 12px;
+}
+
+.toast {
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.toast strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.toast button {
+  padding: 8px 10px;
+}
+
+.success {
+  border-color: var(--accent-success);
+}
+
+.error {
+  border-color: var(--accent-danger);
+}
+
+.imagePreviewFrame {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  background: var(--bg-card-muted);
+}
+
+.imagePreviewLarge {
+  width: 140px;
+  height: 140px;
+  padding: 14px;
+}
+
+.imagePreviewThumbnail {
+  width: 56px;
+  height: 56px;
+  padding: 8px;
+  background: var(--bg-subtle);
+}
+
+.imagePreviewModal {
+  width: min(100%, 260px);
+  height: min(100%, 260px);
+  padding: 18px;
+  background: var(--bg-subtle);
+}
+
+.imagePreviewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.imagePreviewFallback {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.imagePreviewButton {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.imagePreviewButton .imagePreviewFrame {
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.imagePreviewButton:hover .imagePreviewFrame,
+.imagePreviewButton:focus-visible .imagePreviewFrame {
+  transform: scale(1.03);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-soft);
+}
+
+.uploaderCard {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px dashed var(--border-soft);
+  background: var(--bg-card-muted);
+}
+
+.uploaderContent {
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 1366px) {
+  .searchField {
+    grid-column: span 2;
+  }
+
+  .checkboxField {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 1100px) {
+  .heroCard,
+  .filtersToolbar,
+  .tableHeader,
+  .paginationRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heroMeta,
+  .filtersMain,
+  .filtersActions,
+  .headerControls {
+    width: 100%;
+  }
+
+  .filtersActions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .headerControls {
+    justify-content: space-between;
+  }
+
+  .tableWrap {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .table {
+    min-width: 920px;
+  }
+}
+
+@media (max-width: 960px) {
+  .toolbarCard,
+  .modalHeader,
+  .drawerHeader,
+  .drawerActions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filterGrid,
+  .formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .searchField,
+  .checkboxField {
+    grid-column: span 2;
+  }
+
+  .filtersActions {
+    justify-content: flex-start;
+  }
+
+  .uploaderCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroCard,
+  .toolbarCard,
+  .tableCard,
+  .modalCard,
+  .confirmCard {
+    padding: 18px;
+  }
+
+  .filterGrid,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .searchField,
+  .checkboxField {
+    grid-column: span 1;
+  }
+
+  .filtersActions,
+  .paginationActions,
+  .modalActions,
+  .drawerActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .headerControls,
+  .viewToggle {
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .dangerButton,
+  .viewButton {
+    width: 100%;
+  }
+
+  .toastStack {
+    left: 16px;
+    right: 16px;
+    top: 82px;
+  }
+
+  .toast {
+    width: 100%;
+  }
+
+  .modalOverlay,
+  .drawerOverlay {
+    padding: 12px;
+  }
+
+  .detailsDrawer {
+    height: calc(100vh - 24px);
+    border-radius: 22px;
+  }
+
+  .tableWrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .table,
+  .table thead,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table {
+    min-width: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tbody {
+    display: grid;
+    gap: 14px;
+  }
+
+  .table tr {
+    padding: 16px;
+    border: 1px solid var(--border-soft);
+    border-radius: 18px;
+    background: var(--bg-card-muted);
+  }
+
+  .table td {
+    padding: 12px 0 12px 118px;
+    position: relative;
+    border-bottom: 1px solid var(--border-table);
+    min-height: 48px;
+  }
+
+  .table td:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 96px;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .productCardCell {
+    align-items: flex-start;
+  }
+
+  .table td[data-label="Created"] {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+  }
+
+  .table td[data-label="Actions"] {
+    padding: 14px 0 0;
+    min-height: 0;
+  }
+
+  .table td[data-label="Actions"]::before {
+    position: static;
+    display: block;
+    width: auto;
+    margin-bottom: 10px;
+  }
+
+  .actionsShell {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .actionsMenu {
+    position: static;
+    width: 100%;
+  }
+
+  .actionButton {
+    width: auto;
+  }
+}

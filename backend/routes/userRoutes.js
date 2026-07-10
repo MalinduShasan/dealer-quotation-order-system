@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
-const { supabase, unwrap, unwrapSingle, mapUser } = require("../lib/supabaseUtils");
+const { supabase, unwrap, unwrapSingle, mapUser, getActorId } = require("../lib/supabaseUtils");
 
 const router = express.Router();
 const allowedRoles = ["admin", "manager", "sales_executive", "dealer"];
@@ -51,7 +51,7 @@ router.post("/register", async (req, res) => {
     }
 
     const existingUser = await unwrapSingle(
-      supabase.from("users").select("*").eq("email", normalizedEmail).maybeSingle()
+      supabase.from("users").select("*").eq("email", normalizedEmail).is("deleted_at", null).maybeSingle()
     );
 
     if (existingUser) {
@@ -68,7 +68,8 @@ router.post("/register", async (req, res) => {
           email: normalizedEmail,
           password: hashedPassword,
           role: "dealer",
-          status: "active"
+          status: "active",
+          created_by: getActorId(req.user)
         })
         .select("id, name, email, role, status, created_at, updated_at")
         .single()
@@ -98,7 +99,7 @@ router.post("/login", async (req, res) => {
     }
 
     const userRecord = await unwrapSingle(
-      supabase.from("users").select("*").eq("email", normalizedEmail).maybeSingle()
+      supabase.from("users").select("*").eq("email", normalizedEmail).is("deleted_at", null).maybeSingle()
     );
 
     if (!userRecord) {
@@ -141,7 +142,8 @@ router.get("/", protect, adminOnly, async (req, res) => {
 
     let query = supabase
       .from("users")
-      .select("id, name, email, role, status, created_at, updated_at", { count: "exact" });
+      .select("id, name, email, role, status, created_at, updated_at", { count: "exact" })
+      .is("deleted_at", null);
 
     if (search) {
       query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
@@ -181,6 +183,7 @@ router.get("/", protect, adminOnly, async (req, res) => {
         supabase
           .from("dealers")
           .select("id, user_id, dealer_code, company_name")
+          .is("deleted_at", null)
           .in("user_id", dealerUserIds)
       );
 
@@ -227,7 +230,7 @@ router.post("/", protect, adminOnly, async (req, res) => {
     }
 
     const existingUser = await unwrapSingle(
-      supabase.from("users").select("id").eq("email", normalizedEmail).maybeSingle()
+      supabase.from("users").select("id").eq("email", normalizedEmail).is("deleted_at", null).maybeSingle()
     );
 
     if (existingUser) {
@@ -244,7 +247,8 @@ router.post("/", protect, adminOnly, async (req, res) => {
           email: normalizedEmail,
           password: hashedPassword,
           role,
-          status: normalizedStatus
+          status: normalizedStatus,
+          created_by: getActorId(req.user)
         })
         .select("id, name, email, role, status, created_at, updated_at")
         .single()
@@ -280,7 +284,7 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
     }
 
     const existingUser = await unwrapSingle(
-      supabase.from("users").select("id").eq("id", id).maybeSingle()
+      supabase.from("users").select("id").eq("id", id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingUser) {
@@ -288,7 +292,7 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
     }
 
     const duplicateUser = await unwrapSingle(
-      supabase.from("users").select("id").eq("email", normalizedEmail).neq("id", id).maybeSingle()
+      supabase.from("users").select("id").eq("email", normalizedEmail).neq("id", id).is("deleted_at", null).maybeSingle()
     );
 
     if (duplicateUser) {
@@ -300,7 +304,8 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
       email: normalizedEmail,
       role,
       status,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      updated_by: getActorId(req.user)
     };
 
     if (password) {
@@ -332,7 +337,7 @@ router.patch("/:id/status", protect, adminOnly, async (req, res) => {
     }
 
     const existingUser = await unwrapSingle(
-      supabase.from("users").select("id").eq("id", id).maybeSingle()
+      supabase.from("users").select("id").eq("id", id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingUser) {
@@ -344,7 +349,8 @@ router.patch("/:id/status", protect, adminOnly, async (req, res) => {
         .from("users")
         .update({
           status,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: getActorId(req.user)
         })
         .eq("id", id)
         .select("id, name, email, role, status, created_at, updated_at")

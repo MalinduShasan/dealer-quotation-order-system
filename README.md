@@ -30,6 +30,11 @@ Or copy from [frontend/.env.example](/abs/path/C:/Users/User/OneDrive%20-%20Facu
 
 Run the SQL in [backend/supabase/schema.sql](/abs/path/C:/Users/User/OneDrive%20-%20Faculty%20of%20Technology,%20University%20of%20Ruhuna/Projects/dealer-quotation-order-system/backend/supabase/schema.sql:1) inside your Supabase SQL editor before starting the backend.
 
+Run additional incremental migrations from `backend/supabase/migrations/` after the base schema, including:
+
+- `add_brand_logo.sql`
+- `add_product_image.sql`
+
 ## First admin or dealer
 
 The current register endpoint creates only `customer` users. For your first privileged account:
@@ -64,3 +69,5 @@ npm start
 
 - The app currently uses Supabase as the database layer and keeps JWT auth in the Express backend.
 - The frontend API URL can be configured with `REACT_APP_API_URL`.
+- Product catalog management is available at `/products` with backend-managed image uploads through the `product-images` Supabase Storage bucket.
+- Product APIs support filtered listing, details, create/update, status updates, and image upload/removal.

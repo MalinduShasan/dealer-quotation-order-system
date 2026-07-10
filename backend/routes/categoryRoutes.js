@@ -1,6 +1,6 @@
 const express = require("express");
 const { protect, allowRoles } = require("../middleware/authMiddleware");
-const { supabase, unwrap, unwrapSingle } = require("../lib/supabaseUtils");
+const { supabase, unwrapSingle, getActorId } = require("../lib/supabaseUtils");
 
 const router = express.Router();
 const managerViewAccess = allowRoles("admin", "manager", "sales_executive");
@@ -43,6 +43,7 @@ const validateCategoryPayload = async (payload, existingId = null) => {
       .from("categories")
       .select("id, name")
       .ilike("name", name)
+      .is("deleted_at", null)
       .maybeSingle();
 
     if (existingId) {
@@ -82,7 +83,8 @@ router.get("/", protect, async (req, res) => {
 
     let query = supabase
       .from("categories")
-      .select("id, name, description, status, created_at", { count: "exact" });
+      .select("id, name, description, status, created_at", { count: "exact" })
+      .is("deleted_at", null);
 
     if (search) {
       query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
@@ -129,6 +131,7 @@ router.get("/:id", protect, async (req, res) => {
         .from("categories")
         .select("id, name, description, status, created_at")
         .eq("id", req.params.id)
+        .is("deleted_at", null)
         .maybeSingle()
     );
 
@@ -162,7 +165,19 @@ router.post("/", protect, allowRoles("admin"), async (req, res) => {
         .single()
     );
 
-    res.status(201).json(serializeCategory(createdCategory));
+    const createdCategoryWithAudit = await unwrapSingle(
+      supabase
+        .from("categories")
+        .update({
+          created_by: getActorId(req.user),
+          updated_by: getActorId(req.user)
+        })
+        .eq("id", createdCategory.id)
+        .select("id, name, description, status, created_at")
+        .single()
+    );
+
+    res.status(201).json(serializeCategory(createdCategoryWithAudit));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -171,7 +186,7 @@ router.post("/", protect, allowRoles("admin"), async (req, res) => {
 router.put("/:id", protect, allowRoles("admin"), async (req, res) => {
   try {
     const existingCategory = await unwrapSingle(
-      supabase.from("categories").select("id").eq("id", req.params.id).maybeSingle()
+      supabase.from("categories").select("id").eq("id", req.params.id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingCategory) {
@@ -187,7 +202,10 @@ router.put("/:id", protect, allowRoles("admin"), async (req, res) => {
     const updatedCategory = await unwrapSingle(
       supabase
         .from("categories")
-        .update(values)
+        .update({
+          ...values,
+          updated_by: getActorId(req.user)
+        })
         .eq("id", req.params.id)
         .select("id, name, description, status, created_at")
         .single()
@@ -208,7 +226,7 @@ router.patch("/:id/status", protect, allowRoles("admin"), async (req, res) => {
     }
 
     const existingCategory = await unwrapSingle(
-      supabase.from("categories").select("id").eq("id", req.params.id).maybeSingle()
+      supabase.from("categories").select("id").eq("id", req.params.id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingCategory) {
@@ -218,7 +236,10 @@ router.patch("/:id/status", protect, allowRoles("admin"), async (req, res) => {
     const updatedCategory = await unwrapSingle(
       supabase
         .from("categories")
-        .update({ status })
+        .update({
+          status,
+          updated_by: getActorId(req.user)
+        })
         .eq("id", req.params.id)
         .select("id, name, description, status, created_at")
         .single()

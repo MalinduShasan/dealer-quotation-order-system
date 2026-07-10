@@ -8,6 +8,8 @@ import UserManagement from "./pages/users/UserManagement";
 import DealerManagement from "./pages/dealers/DealerManagement";
 import CategoryManagement from "./pages/categories/CategoryManagement";
 import BrandManagement from "./pages/brands/BrandManagement";
+import ProductManagement from "./pages/products/ProductManagement";
+import ProductDetails from "./pages/products/ProductDetails";
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
@@ -87,6 +89,30 @@ function App() {
             element={
               <PrivateRoute role={["admin", "manager", "sales_executive"]}>
                 <BrandManagement
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/products"
+            element={
+              <PrivateRoute role={["admin", "manager", "sales_executive", "dealer"]}>
+                <ProductManagement
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/products/:id"
+            element={
+              <PrivateRoute role={["admin", "manager", "sales_executive", "dealer"]}>
+                <ProductDetails
                   theme={theme}
                   onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
                 />

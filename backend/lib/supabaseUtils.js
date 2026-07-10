@@ -24,6 +24,8 @@ const unwrapSingle = async (query) => {
   return data;
 };
 
+const getActorId = (user) => user?.id || user?._id || null;
+
 const mapUser = (user) => {
   if (!user) return null;
 
@@ -74,15 +76,24 @@ const mapProduct = (product) => {
     sku: product.sku,
     name: product.name,
     description: product.description,
+    imageUrl: product.image_url || null,
+    imagePath: product.image_path || null,
     categoryId: product.category_id,
     category: product.category || null,
+    categoryName: product.category?.name || null,
     brandId: product.brand_id,
     brand: product.brand || null,
+    brandName: product.brand?.name || null,
     unitPrice: product.unit_price,
     dealerPrice: product.dealer_price,
     stockQuantity: product.stock_quantity,
     minimumStock: product.minimum_stock,
+    isLowStock: Number(product.stock_quantity) <= Number(product.minimum_stock),
     status: product.status,
+    createdBy: product.created_by || null,
+    createdByName: product.createdByUser?.name || null,
+    updatedBy: product.updated_by || null,
+    updatedByName: product.updatedByUser?.name || null,
     createdAt: product.created_at,
     updatedAt: product.updated_at
   };
@@ -180,6 +191,7 @@ module.exports = {
   supabase,
   unwrap,
   unwrapSingle,
+  getActorId,
   mapUser,
   mapDealer,
   mapProduct,
