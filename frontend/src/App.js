@@ -7,6 +7,7 @@ import Quotations from "./pages/Quotations";
 import UserManagement from "./pages/users/UserManagement";
 import DealerManagement from "./pages/dealers/DealerManagement";
 import CategoryManagement from "./pages/categories/CategoryManagement";
+import BrandManagement from "./pages/brands/BrandManagement";
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
@@ -74,6 +75,18 @@ function App() {
             element={
               <PrivateRoute role={["admin", "manager", "sales_executive"]}>
                 <CategoryManagement
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/brands"
+            element={
+              <PrivateRoute role={["admin", "manager", "sales_executive"]}>
+                <BrandManagement
                   theme={theme}
                   onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
                 />
