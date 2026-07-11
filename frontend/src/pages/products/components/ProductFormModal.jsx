@@ -15,6 +15,7 @@ export default function ProductFormModal({
   imageUploading,
   imagePreviewUrl,
   hasExistingImage,
+  skuLocked = false,
   onChange,
   onImageSelect,
   onImageRemove,
@@ -50,7 +51,11 @@ export default function ProductFormModal({
               value={values.sku}
               onChange={onChange}
               placeholder="SKU"
+              disabled={mode === "edit" && skuLocked}
             />
+            {mode === "edit" && skuLocked ? (
+              <span className={styles.fieldError}>SKU is locked because this product has inventory or sales history.</span>
+            ) : null}
             {errors.sku ? <span className={styles.fieldError}>{errors.sku}</span> : null}
           </div>
 
@@ -145,22 +150,24 @@ export default function ProductFormModal({
             {errors.dealerPrice ? <span className={styles.fieldError}>{errors.dealerPrice}</span> : null}
           </div>
 
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel} htmlFor="product-stock-quantity">
-              Stock Quantity
-            </label>
-            <input
-              id="product-stock-quantity"
-              name="stockQuantity"
-              type="number"
-              min="0"
-              step="1"
-              className={`${styles.fieldInput} ${errors.stockQuantity ? styles.fieldInputError : ""}`}
-              value={values.stockQuantity}
-              onChange={onChange}
-            />
-            {errors.stockQuantity ? <span className={styles.fieldError}>{errors.stockQuantity}</span> : null}
-          </div>
+          {mode === "create" ? (
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel} htmlFor="product-stock-quantity">
+                Initial Stock
+              </label>
+              <input
+                id="product-stock-quantity"
+                name="stockQuantity"
+                type="number"
+                min="0"
+                step="1"
+                className={`${styles.fieldInput} ${errors.stockQuantity ? styles.fieldInputError : ""}`}
+                value={values.stockQuantity}
+                onChange={onChange}
+              />
+              {errors.stockQuantity ? <span className={styles.fieldError}>{errors.stockQuantity}</span> : null}
+            </div>
+          ) : null}
 
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel} htmlFor="product-minimum-stock">

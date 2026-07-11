@@ -316,13 +316,22 @@ export default function ProductManagement({ theme, onToggleTheme }) {
   };
 
   const openEditModal = (product) => {
-    setModalMode("edit");
-    setEditingProduct(product);
-    setFormValues(buildProductFormValues(product));
-    setFormErrors({});
-    resetImageState();
-    setImagePreviewUrl(product.imageUrl || "");
-    setIsModalOpen(true);
+    const loadProduct = async () => {
+      try {
+        const { data } = await getProductById(user.token, product.id);
+        setModalMode("edit");
+        setEditingProduct(data);
+        setFormValues(buildProductFormValues(data));
+        setFormErrors({});
+        resetImageState();
+        setImagePreviewUrl(data.imageUrl || "");
+        setIsModalOpen(true);
+      } catch (error) {
+        pushToast("error", "Load failed", error.response?.data?.message || "Unable to load product details");
+      }
+    };
+
+    loadProduct();
   };
 
   const closeModal = () => {
@@ -390,7 +399,7 @@ export default function ProductManagement({ theme, onToggleTheme }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const errors = validateProductForm(formValues);
+    const errors = validateProductForm(formValues, { allowStockEdit: modalMode === "create" });
     if (selectedImageFile) {
       const imageError = validateProductImage(selectedImageFile);
       if (imageError) errors.image = imageError;
@@ -402,7 +411,7 @@ export default function ProductManagement({ theme, onToggleTheme }) {
     setSubmitting(true);
 
     try {
-      const payload = buildProductPayload(formValues);
+      const payload = buildProductPayload(formValues, { includeStockQuantity: modalMode === "create" });
 
       let savedProduct;
 
@@ -672,6 +681,7 @@ export default function ProductManagement({ theme, onToggleTheme }) {
         imageUploading={imageUploading}
         imagePreviewUrl={imagePreviewUrl || (imageRemoved ? "" : editingProduct?.imageUrl || "")}
         hasExistingImage={Boolean(editingProduct?.imageUrl) && !imageRemoved}
+        skuLocked={Boolean(editingProduct?.hasTransactionHistory)}
         onChange={handleFormChange}
         onImageSelect={handleImageSelect}
         onImageRemove={handleImageRemove}

@@ -6,7 +6,7 @@ const { supabase, unwrapSingle, mapProduct, getActorId } = require("../lib/supab
 const router = express.Router();
 
 const PRODUCT_IMAGE_BUCKET = "product-images";
-const allowedStatuses = ["active", "inactive", "out_of_stock"];
+const allowedStatuses = ["active", "inactive", "low_stock", "out_of_stock"];
 const managerWriteRoles = ["admin", "manager"];
 const viewerRoles = ["admin", "manager", "sales_executive", "dealer"];
 const sortableColumns = {
@@ -64,6 +64,25 @@ const getLookupRecord = async (table, id) => {
   return unwrapSingle(supabase.from(table).select("id, name, status").eq("id", id).is("deleted_at", null).maybeSingle());
 };
 
+const hasProductTransactionHistory = async (productId) => {
+  const [quotationItem, orderItem, stockMovement] = await Promise.all([
+    unwrapSingle(supabase.from("quotation_items").select("id").eq("product_id", productId).limit(1).maybeSingle()),
+    unwrapSingle(supabase.from("order_items").select("id").eq("product_id", productId).limit(1).maybeSingle()),
+    unwrapSingle(supabase.from("stock_movements").select("id").eq("product_id", productId).limit(1).maybeSingle())
+  ]);
+
+  return Boolean(quotationItem || orderItem || stockMovement);
+};
+
+const attachTransactionHistoryFlag = async (product) => {
+  if (!product) return null;
+
+  return {
+    ...product,
+    hasTransactionHistory: await hasProductTransactionHistory(product.id)
+  };
+};
+
 const removeStorageObject = async (imagePath) => {
   if (!imagePath) return;
   const { error } = await supabase.storage.from(PRODUCT_IMAGE_BUCKET).remove([imagePath]);
@@ -94,7 +113,11 @@ const uploadImageToStorage = async (productId, file) => {
   };
 };
 
-const validateProductPayload = async (payload, existingId = null, { allowInactiveLookups = false } = {}) => {
+const validateProductPayload = async (
+  payload,
+  existingId = null,
+  { allowInactiveLookups = false, allowStockEdit = !existingId, currentStockQuantity = 0 } = {}
+) => {
   const sku = normalizeText(payload.sku);
   const name = normalizeText(payload.name);
   const description = normalizeText(payload.description);
@@ -151,7 +174,7 @@ const validateProductPayload = async (payload, existingId = null, { allowInactiv
     errors.push("Dealer price must be 0 or greater");
   }
 
-  if (!Number.isFinite(stockQuantity) || stockQuantity < 0) {
+  if (allowStockEdit && (!Number.isFinite(stockQuantity) || stockQuantity < 0)) {
     errors.push("Stock quantity must be 0 or greater");
   }
 
@@ -163,8 +186,16 @@ const validateProductPayload = async (payload, existingId = null, { allowInactiv
     errors.push("Invalid product status");
   }
 
-  if (stockQuantity === 0 && status === "active") {
-    status = "out_of_stock";
+  const effectiveStockQuantity = allowStockEdit ? stockQuantity : Number(currentStockQuantity ?? 0);
+
+  if (status !== "inactive") {
+    if (effectiveStockQuantity === 0) {
+      status = "out_of_stock";
+    } else if (effectiveStockQuantity <= minimumStock) {
+      status = "low_stock";
+    } else {
+      status = "active";
+    }
   }
 
   const [category, brand] = await Promise.all([getLookupRecord("categories", categoryId), getLookupRecord("brands", brandId)]);
@@ -191,7 +222,7 @@ const validateProductPayload = async (payload, existingId = null, { allowInactiv
       brand_id: brandId,
       unit_price: unitPrice,
       dealer_price: dealerPrice,
-      stock_quantity: stockQuantity,
+      stock_quantity: allowStockEdit ? stockQuantity : undefined,
       minimum_stock: minimumStock,
       status
     }
@@ -225,7 +256,7 @@ router.get("/", protect, async (req, res) => {
     }
 
     if (userRole === "dealer") {
-      query = query.eq("status", "active");
+      query = query.in("status", ["active", "low_stock"]);
     } else if (status !== "all") {
       if (!allowedStatuses.includes(status)) {
         return res.status(400).json({ message: "Invalid status filter" });
@@ -251,7 +282,8 @@ router.get("/", protect, async (req, res) => {
       throw new Error(error.message);
     }
 
-    const mappedItems = (data || []).map(mapProduct).filter((item) => {
+    const itemsWithHistory = await Promise.all((data || []).map(attachTransactionHistoryFlag));
+    const mappedItems = itemsWithHistory.map(mapProduct).filter((item) => {
       if (!lowStock) return true;
       return item.stockQuantity <= item.minimumStock;
     });
@@ -284,11 +316,11 @@ router.get("/:id", protect, async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    if (userRole === "dealer" && product.status !== "active") {
+    if (userRole === "dealer" && !["active", "low_stock"].includes(product.status)) {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    res.json(mapProduct(product));
+    res.json(mapProduct(await attachTransactionHistoryFlag(product)));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -302,20 +334,30 @@ router.post("/", protect, allowRoles(...managerWriteRoles), async (req, res) => 
       return res.status(400).json({ message: errors[0] });
     }
 
+    const actorId = getActorId(req.user);
+    const { data: productId, error } = await supabase.rpc("create_product_with_initial_stock", {
+      p_sku: values.sku,
+      p_name: values.name,
+      p_description: values.description,
+      p_category_id: values.category_id,
+      p_brand_id: values.brand_id,
+      p_unit_price: values.unit_price,
+      p_dealer_price: values.dealer_price,
+      p_minimum_stock: values.minimum_stock,
+      p_status: values.status,
+      p_initial_stock: values.stock_quantity ?? 0,
+      p_created_by: actorId
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
     const createdProduct = await unwrapSingle(
-      supabase
-        .from("products")
-        .insert({
-          ...values,
-          updated_at: new Date().toISOString(),
-          created_by: getActorId(req.user),
-          updated_by: getActorId(req.user)
-        })
-        .select(productSelect)
-        .single()
+      supabase.from("products").select(productSelect).eq("id", productId).is("deleted_at", null).single()
     );
 
-    res.status(201).json(mapProduct(createdProduct));
+    res.status(201).json(mapProduct(await attachTransactionHistoryFlag(createdProduct)));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -330,18 +372,41 @@ router.put("/:id", protect, allowRoles(...managerWriteRoles), async (req, res) =
     }
 
     const { errors, values } = await validateProductPayload(req.body, req.params.id, {
-      allowInactiveLookups: true
+      allowInactiveLookups: true,
+      allowStockEdit: false,
+      currentStockQuantity: existingProduct.stock_quantity ?? existingProduct.stockQuantity ?? 0
     });
 
     if (errors.length > 0) {
       return res.status(400).json({ message: errors[0] });
     }
 
+    const submittedSku = normalizeText(req.body.sku);
+    const currentSku = normalizeText(existingProduct.sku);
+
+    if (submittedSku.toLowerCase() !== currentSku.toLowerCase()) {
+      const hasTransactionHistory = await hasProductTransactionHistory(req.params.id);
+
+      if (hasTransactionHistory) {
+        return res.status(409).json({
+          message: "SKU cannot be changed because this product has transaction history"
+        });
+      }
+    }
+
     const updatedProduct = await unwrapSingle(
       supabase
         .from("products")
         .update({
-          ...values,
+          sku: values.sku,
+          name: values.name,
+          description: values.description,
+          category_id: values.category_id,
+          brand_id: values.brand_id,
+          unit_price: values.unit_price,
+          dealer_price: values.dealer_price,
+          minimum_stock: values.minimum_stock,
+          status: values.status,
           image_url: existingProduct.image_url || existingProduct.imageUrl || null,
           image_path: existingProduct.image_path || existingProduct.imagePath || null,
           updated_at: new Date().toISOString(),
@@ -352,7 +417,7 @@ router.put("/:id", protect, allowRoles(...managerWriteRoles), async (req, res) =
         .single()
     );
 
-    res.json(mapProduct(updatedProduct));
+    res.json(mapProduct(await attachTransactionHistoryFlag(updatedProduct)));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -372,8 +437,17 @@ router.patch("/:id/status", protect, allowRoles(...managerWriteRoles), async (re
       return res.status(400).json({ message: "Invalid product status" });
     }
 
-    if (Number(existingProduct.stock_quantity ?? existingProduct.stockQuantity) === 0 && status === "active") {
-      status = "out_of_stock";
+    if (status !== "inactive") {
+      const currentStock = Number(existingProduct.stock_quantity ?? existingProduct.stockQuantity ?? 0);
+      const minimumStock = Number(existingProduct.minimum_stock ?? existingProduct.minimumStock ?? 0);
+
+      if (currentStock === 0) {
+        status = "out_of_stock";
+      } else if (currentStock <= minimumStock) {
+        status = "low_stock";
+      } else {
+        status = "active";
+      }
     }
 
     const updatedProduct = await unwrapSingle(
@@ -389,7 +463,7 @@ router.patch("/:id/status", protect, allowRoles(...managerWriteRoles), async (re
         .single()
     );
 
-    res.json(mapProduct(updatedProduct));
+    res.json(mapProduct(await attachTransactionHistoryFlag(updatedProduct)));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -447,7 +521,7 @@ router.post(
           }
         }
 
-        return res.json(mapProduct(updatedProduct));
+        return res.json(mapProduct(await attachTransactionHistoryFlag(updatedProduct)));
       } catch (dbError) {
         try {
           await removeStorageObject(uploadedImage.imagePath);
@@ -489,7 +563,7 @@ router.delete("/:id/image", protect, allowRoles(...managerWriteRoles), async (re
         .single()
     );
 
-    res.json(mapProduct(updatedProduct));
+    res.json(mapProduct(await attachTransactionHistoryFlag(updatedProduct)));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -5,6 +5,7 @@ export const sidebarItems = [
   { id: "categories", label: "Categories" },
   { id: "brands", label: "Brands" },
   { id: "products", label: "Products" },
+  { id: "inventory", label: "Inventory" },
   { id: "quotations", label: "Quotations" },
   { id: "orders", label: "Orders" },
   { id: "reports", label: "Reports" },

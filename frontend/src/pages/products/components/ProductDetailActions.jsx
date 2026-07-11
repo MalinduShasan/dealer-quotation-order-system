@@ -4,6 +4,9 @@ export default function ProductDetailActions({
   canManage,
   product,
   onToggleStatus,
+  onRestock,
+  onAdjust,
+  onViewFullHistory,
   isEditing,
   onCancelEdit,
   onSaveInline,
@@ -27,6 +30,15 @@ export default function ProductDetailActions({
               onClick={() => onToggleStatus(product)}
             >
               {product.status === "active" ? "Deactivate Product" : "Activate Product"}
+            </button>
+            <button type="button" className={styles.secondaryButton} onClick={() => onRestock(product)}>
+              Restock
+            </button>
+            <button type="button" className={styles.secondaryButton} onClick={() => onAdjust(product)}>
+              Adjust Stock
+            </button>
+            <button type="button" className={styles.secondaryButton} onClick={onViewFullHistory}>
+              View Full History
             </button>
             <button type="button" className={styles.disabledButton} disabled>
               Archive Product

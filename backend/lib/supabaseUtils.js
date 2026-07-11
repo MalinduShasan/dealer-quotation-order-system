@@ -89,6 +89,7 @@ const mapProduct = (product) => {
     stockQuantity: product.stock_quantity,
     minimumStock: product.minimum_stock,
     isLowStock: Number(product.stock_quantity) <= Number(product.minimum_stock),
+    hasTransactionHistory: Boolean(product.hasTransactionHistory),
     status: product.status,
     createdBy: product.created_by || null,
     createdByName: product.createdByUser?.name || null,
@@ -96,6 +97,34 @@ const mapProduct = (product) => {
     updatedByName: product.updatedByUser?.name || null,
     createdAt: product.created_at,
     updatedAt: product.updated_at
+  };
+};
+
+const mapStockMovement = (movement) => {
+  if (!movement) return null;
+
+  return {
+    id: movement.id,
+    productId: movement.product_id,
+    movementType: movement.movement_type,
+    quantity: movement.quantity,
+    previousQuantity: movement.previous_quantity,
+    newQuantity: movement.new_quantity,
+    referenceType: movement.reference_type || null,
+    referenceId: movement.reference_id || null,
+    reason: movement.reason,
+    createdBy: movement.created_by || null,
+    createdByName: movement.createdByUser?.name || null,
+    createdAt: movement.created_at,
+    product: movement.product
+      ? {
+          id: movement.product.id,
+          sku: movement.product.sku,
+          name: movement.product.name,
+          imageUrl: movement.product.image_url || null,
+          status: movement.product.status
+        }
+      : null
   };
 };
 
@@ -195,6 +224,7 @@ module.exports = {
   mapUser,
   mapDealer,
   mapProduct,
+  mapStockMovement,
   mapQuotationWithItems,
   mapOrderWithItems
 };

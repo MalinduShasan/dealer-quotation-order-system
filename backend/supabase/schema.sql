@@ -54,7 +54,7 @@ create table if not exists public.brands (
 
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
-  sku text not null unique,
+  sku text not null,
   name text not null,
   description text default '',
   image_url text,
@@ -66,9 +66,33 @@ create table if not exists public.products (
   stock_quantity integer not null default 0 check (stock_quantity >= 0),
   minimum_stock integer not null default 0 check (minimum_stock >= 0),
   status text not null default 'active'
-    check (status in ('active', 'inactive', 'out_of_stock')),
+    check (status in ('active', 'inactive', 'low_stock', 'out_of_stock')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
+);
+
+create table if not exists public.stock_movements (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete restrict,
+  movement_type text not null
+    check (movement_type in (
+      'initial_stock',
+      'restock',
+      'adjustment_in',
+      'adjustment_out',
+      'sale',
+      'return',
+      'order_cancelled'
+    )),
+  quantity integer not null check (quantity > 0),
+  previous_quantity integer not null check (previous_quantity >= 0),
+  new_quantity integer not null check (new_quantity >= 0),
+  reference_type text
+    check (reference_type is null or reference_type in ('product', 'quotation', 'order', 'return', 'manual_adjustment')),
+  reference_id uuid,
+  reason text not null,
+  created_by uuid references public.users(id) on delete set null,
+  created_at timestamptz not null default now()
 );
 
 create table if not exists public.quotations (
@@ -164,6 +188,11 @@ create index if not exists idx_users_role on public.users(role);
 create index if not exists idx_dealers_user_id on public.dealers(user_id);
 create index if not exists idx_products_category_id on public.products(category_id);
 create index if not exists idx_products_brand_id on public.products(brand_id);
+create unique index if not exists idx_products_sku_unique_active on public.products (lower(sku)) where deleted_at is null;
+create index if not exists idx_stock_movements_product_id on public.stock_movements(product_id);
+create index if not exists idx_stock_movements_movement_type on public.stock_movements(movement_type);
+create index if not exists idx_stock_movements_created_at on public.stock_movements(created_at);
+create index if not exists idx_stock_movements_created_by on public.stock_movements(created_by);
 create index if not exists idx_quotations_dealer_id on public.quotations(dealer_id);
 create index if not exists idx_quotations_status on public.quotations(status);
 create index if not exists idx_quotation_items_quotation_id on public.quotation_items(quotation_id);

@@ -34,6 +34,7 @@ Run additional incremental migrations from `backend/supabase/migrations/` after 
 
 - `add_brand_logo.sql`
 - `add_product_image.sql`
+- `create_stock_movements.sql`
 
 ## First admin or dealer
 
@@ -71,3 +72,4 @@ npm start
 - The frontend API URL can be configured with `REACT_APP_API_URL`.
 - Product catalog management is available at `/products` with backend-managed image uploads through the `product-images` Supabase Storage bucket.
 - Product APIs support filtered listing, details, create/update, status updates, and image upload/removal.
+- Inventory management is available at `/inventory` with movement-based stock control via `/api/inventory`.

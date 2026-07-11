@@ -7,6 +7,11 @@ import DashboardFooter from "../../components/dashboard/DashboardFooter";
 import shellStyles from "../../components/dashboard/AdminDashboard.module.css";
 import styles from "./ProductDetails.module.css";
 import {
+  adjustProductStock,
+  getProductInventoryMovements,
+  restockProduct
+} from "../../api/inventoryService";
+import {
   deleteProductImage,
   getProductById,
   updateProduct,
@@ -22,6 +27,9 @@ import ProductImageSection from "./components/ProductImageSection";
 import ProductInfoSection from "./components/ProductInfoSection";
 import ProductInventorySection from "./components/ProductInventorySection";
 import ProductPricingSection from "./components/ProductPricingSection";
+import RestockModal from "../inventory/components/RestockModal";
+import StockAdjustmentModal from "../inventory/components/StockAdjustmentModal";
+import StockMovementHistory from "../inventory/components/StockMovementHistory";
 import {
   buildProductFormValues,
   buildProductPayload,
@@ -109,6 +117,15 @@ export default function ProductDetails({ theme, onToggleTheme }) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [imageRemoved, setImageRemoved] = useState(false);
   const [confirmProduct, setConfirmProduct] = useState(null);
+  const [movements, setMovements] = useState([]);
+  const [movementLoading, setMovementLoading] = useState(true);
+  const [movementError, setMovementError] = useState("");
+  const [restockValues, setRestockValues] = useState({ quantity: "1", reason: "" });
+  const [adjustmentValues, setAdjustmentValues] = useState({ adjustmentType: "increase", quantity: "1", reason: "" });
+  const [restockErrors, setRestockErrors] = useState({});
+  const [adjustmentErrors, setAdjustmentErrors] = useState({});
+  const [isRestockOpen, setIsRestockOpen] = useState(false);
+  const [isAdjustmentOpen, setIsAdjustmentOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
 
   const canManageProducts = ["admin", "manager"].includes(user?.role);
@@ -161,6 +178,26 @@ export default function ProductDetails({ theme, onToggleTheme }) {
     };
 
     loadProduct();
+  }, [id, user]);
+
+  useEffect(() => {
+    const loadMovements = async () => {
+      if (!user?.token || !id) return;
+
+      setMovementLoading(true);
+      setMovementError("");
+
+      try {
+        const { data } = await getProductInventoryMovements(user.token, id, { page: 1, limit: 5 });
+        setMovements(data.items || []);
+      } catch (loadError) {
+        setMovementError(loadError.response?.data?.message || "Unable to load stock movement history");
+      } finally {
+        setMovementLoading(false);
+      }
+    };
+
+    loadMovements();
   }, [id, user]);
 
   useEffect(() => {
@@ -232,6 +269,11 @@ export default function ProductDetails({ theme, onToggleTheme }) {
     const { data } = await getProductById(user.token, id);
     setProduct(data);
     return data;
+  };
+
+  const refreshMovements = async () => {
+    const { data } = await getProductInventoryMovements(user.token, id, { page: 1, limit: 5 });
+    setMovements(data.items || []);
   };
 
   const handleLogout = () => {
@@ -330,7 +372,7 @@ export default function ProductDetails({ theme, onToggleTheme }) {
   const handleSubmit = async (event) => {
     event?.preventDefault?.();
 
-    const validationErrors = validateProductForm(formValues);
+    const validationErrors = validateProductForm(formValues, { allowStockEdit: false });
     if (selectedImageFile) {
       const imageError = validateProductImage(selectedImageFile);
       if (imageError) validationErrors.image = imageError;
@@ -342,7 +384,7 @@ export default function ProductDetails({ theme, onToggleTheme }) {
     setSubmitting(true);
 
     try {
-      await updateProduct(user.token, product.id, buildProductPayload(formValues));
+      await updateProduct(user.token, product.id, buildProductPayload(formValues, { includeStockQuantity: false }));
       await refreshProduct();
 
       if (selectedImageFile || (imageRemoved && product.imageUrl)) {
@@ -397,11 +439,78 @@ export default function ProductDetails({ theme, onToggleTheme }) {
       const nextStatus = confirmProduct.status === "active" ? "inactive" : "active";
       await updateProductStatus(user.token, confirmProduct.id, nextStatus);
       const refreshed = await refreshProduct();
+      await refreshMovements();
       setConfirmProduct(null);
       setPreviewProduct((current) => (current ? refreshed : current));
       pushToast("success", nextStatus === "active" ? "Product activated" : "Product deactivated", `${confirmProduct.name} is now ${nextStatus}.`);
     } catch (statusError) {
       pushToast("error", "Status update failed", statusError.response?.data?.message || "Unable to update product status");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const validateInventoryForm = (values, adjustmentType = null) => {
+    const errors = {};
+    const quantity = Number(values.quantity);
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      errors.quantity = "Quantity must be a positive integer";
+    }
+    if (!values.reason.trim()) {
+      errors.reason = "Reason is required";
+    }
+    if (adjustmentType === "decrease" && Number(product?.stockQuantity || 0) - quantity < 0) {
+      errors.quantity = "Adjustment cannot reduce stock below zero";
+    }
+    return errors;
+  };
+
+  const handleRestockSubmit = async (event) => {
+    event.preventDefault();
+    const errors = validateInventoryForm(restockValues);
+    setRestockErrors(errors);
+    if (Object.keys(errors).length > 0 || !product) return;
+
+    setSubmitting(true);
+    try {
+      await restockProduct(user.token, {
+        productId: product.id,
+        quantity: Number(restockValues.quantity),
+        reason: restockValues.reason.trim()
+      });
+      await refreshProduct();
+      await refreshMovements();
+      setIsRestockOpen(false);
+      setRestockValues({ quantity: "1", reason: "" });
+      pushToast("success", "Stock updated", "The product was restocked successfully.");
+    } catch (submitError) {
+      pushToast("error", "Restock failed", submitError.response?.data?.message || "Unable to restock product");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAdjustmentSubmit = async (event) => {
+    event.preventDefault();
+    const errors = validateInventoryForm(adjustmentValues, adjustmentValues.adjustmentType);
+    setAdjustmentErrors(errors);
+    if (Object.keys(errors).length > 0 || !product) return;
+
+    setSubmitting(true);
+    try {
+      await adjustProductStock(user.token, {
+        productId: product.id,
+        adjustmentType: adjustmentValues.adjustmentType,
+        quantity: Number(adjustmentValues.quantity),
+        reason: adjustmentValues.reason.trim()
+      });
+      await refreshProduct();
+      await refreshMovements();
+      setIsAdjustmentOpen(false);
+      setAdjustmentValues({ adjustmentType: "increase", quantity: "1", reason: "" });
+      pushToast("success", "Stock adjusted", "The product stock adjustment was saved successfully.");
+    } catch (submitError) {
+      pushToast("error", "Adjustment failed", submitError.response?.data?.message || "Unable to adjust product stock");
     } finally {
       setSubmitting(false);
     }
@@ -470,6 +579,11 @@ export default function ProductDetails({ theme, onToggleTheme }) {
                       errors={formErrors}
                       onChange={handleFormChange}
                     />
+                    {movementLoading ? <div className={styles.stateCard}>Loading stock movement history...</div> : null}
+                    {!movementLoading && movementError ? <div className={`${styles.stateCard} ${styles.errorCard}`}>{movementError}</div> : null}
+                    {!movementLoading && !movementError ? (
+                      <StockMovementHistory items={movements} title="Recent Stock Movements" compact showProduct={false} />
+                    ) : null}
                   </div>
 
                   <div className={styles.sideColumn}>
@@ -489,6 +603,17 @@ export default function ProductDetails({ theme, onToggleTheme }) {
                       canManage={canManageProducts}
                       product={product}
                       onToggleStatus={setConfirmProduct}
+                      onRestock={() => {
+                        setRestockValues({ quantity: "1", reason: "" });
+                        setRestockErrors({});
+                        setIsRestockOpen(true);
+                      }}
+                      onAdjust={() => {
+                        setAdjustmentValues({ adjustmentType: "increase", quantity: "1", reason: "" });
+                        setAdjustmentErrors({});
+                        setIsAdjustmentOpen(true);
+                      }}
+                      onViewFullHistory={() => navigate("/inventory", { state: { inventoryState: { productId: product.id } } })}
                       isEditing={isEditing}
                       onCancelEdit={closeInlineEdit}
                       onSaveInline={handleSubmit}
@@ -536,6 +661,28 @@ export default function ProductDetails({ theme, onToggleTheme }) {
         submitting={submitting}
         onClose={() => setConfirmProduct(null)}
         onConfirm={handleToggleStatus}
+      />
+
+      <RestockModal
+        isOpen={isRestockOpen}
+        product={product}
+        values={restockValues}
+        errors={restockErrors}
+        submitting={submitting}
+        onChange={(event) => setRestockValues((current) => ({ ...current, [event.target.name]: event.target.value }))}
+        onClose={() => setIsRestockOpen(false)}
+        onSubmit={handleRestockSubmit}
+      />
+
+      <StockAdjustmentModal
+        isOpen={isAdjustmentOpen}
+        product={product}
+        values={adjustmentValues}
+        errors={adjustmentErrors}
+        submitting={submitting}
+        onChange={(event) => setAdjustmentValues((current) => ({ ...current, [event.target.name]: event.target.value }))}
+        onClose={() => setIsAdjustmentOpen(false)}
+        onSubmit={handleAdjustmentSubmit}
       />
 
       <ToastStack toasts={toasts} onDismiss={(toastId) => setToasts((current) => current.filter((toast) => toast.id !== toastId))} />

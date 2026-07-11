@@ -16,6 +16,7 @@ export const DealersIcon = createIcon(<><path d="M3 21h18" /><path d="M5 21V8l7-
 export const CategoriesIcon = createIcon(<><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></>);
 export const BrandsIcon = createIcon(<><path d="M20 7 9 18l-5-5" /></>);
 export const ProductsIcon = createIcon(<><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></>);
+export const InventoryIcon = createIcon(<><path d="M3 7h18" /><path d="M5 7v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7" /><path d="M9 11h6" /><path d="M9 15h6" /><path d="M10 3h4l1 4H9z" /></>);
 export const QuotationsIcon = createIcon(<><path d="M8 3h8l5 5v13H3V3z" /><path d="M13 3v5h5" /><path d="M8 13h8" /><path d="M8 17h5" /></>);
 export const OrdersIcon = createIcon(<><circle cx="9" cy="20" r="1" /><circle cx="20" cy="20" r="1" /><path d="M3 4h2l2.6 10.4a1 1 0 0 0 1 .76h9.72a1 1 0 0 0 .98-.8L21 8H7" /></>);
 export const ReportsIcon = createIcon(<><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-6" /></>);

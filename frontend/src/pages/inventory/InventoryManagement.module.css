@@ -1,0 +1,420 @@
+.page {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.heroCard,
+.toolbarCard,
+.sectionCard,
+.modalCard,
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+}
+
+.heroCard,
+.toolbarCard,
+.sectionCard,
+.modalCard {
+  padding: 24px;
+}
+
+.heroCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.heroMeta,
+.modalForm {
+  display: grid;
+  gap: 16px;
+}
+
+.heroMeta {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 280px;
+}
+
+.heroMetric {
+  background: var(--bg-card-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.pageTitle,
+.sectionTitle,
+.modalTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.pageDescription,
+.paginationMeta,
+.mobileMeta {
+  color: var(--text-muted);
+}
+
+.sectionEyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-primary);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.fieldInput {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.modalActions,
+.paginationActions,
+.modalHeader,
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fieldGroupWide {
+  grid-column: 1 / -1;
+}
+
+.primaryButton,
+.secondaryButton {
+  border-radius: 14px;
+  min-height: 44px;
+  padding: 11px 16px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), opacity var(--transition-base), border-color var(--transition-base);
+}
+
+.primaryButton {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-accent-gradient);
+  color: var(--text-on-accent);
+}
+
+.secondaryButton {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.inventoryTableWrap {
+  overflow-x: auto;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  border: 1px solid var(--border-soft);
+}
+
+.badgeIcon {
+  width: 0.92rem;
+  height: 0.92rem;
+}
+
+.badgesuccess {
+  background: var(--bg-success-soft);
+  color: var(--text-success);
+}
+
+.badgewarning {
+  background: var(--bg-warning-soft);
+  color: var(--text-warning);
+}
+
+.badgedanger {
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.badgeinfo {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.stateBlock,
+.errorBlock,
+.emptyBlock,
+.emptyStateCard {
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.errorBlock {
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.emptyStateCard p {
+  margin-bottom: 0;
+}
+
+.inventoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.movementTableWrap {
+  overflow-x: auto;
+}
+
+.movementTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.movementTable th,
+.movementTable td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: top;
+  color: var(--text-primary);
+}
+
+.movementCardList {
+  display: grid;
+  gap: 14px;
+}
+
+.movementCard {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+}
+
+.movementCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.desktopMovements {
+  display: block;
+}
+
+.mobileMovements {
+  display: none;
+}
+
+.skeletonCard {
+  padding: 20px;
+  border-radius: 22px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 14px;
+}
+
+.skeletonThumb,
+.skeletonLineLg,
+.skeletonLineMd,
+.skeletonMetric,
+.skeletonButton {
+  border-radius: 14px;
+  background: var(--bg-card-muted);
+}
+
+.skeletonThumb {
+  width: 64px;
+  height: 64px;
+}
+
+.skeletonLineLg {
+  height: 18px;
+  width: 72%;
+}
+
+.skeletonLineMd {
+  height: 14px;
+  width: 48%;
+}
+
+.skeletonMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.skeletonMetric {
+  height: 76px;
+}
+
+.skeletonActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.skeletonButton {
+  height: 44px;
+}
+
+.toastStack {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 40;
+  display: grid;
+  gap: 12px;
+}
+
+.toast {
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.success {
+  background: var(--bg-card);
+}
+
+.error {
+  background: var(--bg-danger-soft);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  padding: 24px;
+  background: var(--bg-backdrop);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.modalCard {
+  width: min(100%, 760px);
+  max-height: min(90vh, 860px);
+  overflow: auto;
+}
+
+.modalForm {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fieldLabel,
+.fieldError {
+  font-size: 0.84rem;
+}
+
+.fieldError {
+  color: var(--text-danger);
+}
+
+.paginationRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1200px) {
+  .inventoryGrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .modalForm,
+  .heroMeta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .desktopMovements {
+    display: none;
+  }
+
+  .mobileMovements {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroCard,
+  .toolbarCard,
+  .sectionCard,
+  .modalCard {
+    padding: 18px;
+  }
+
+  .modalForm,
+  .heroMeta {
+    grid-template-columns: 1fr;
+  }
+
+  .toastStack {
+    left: 16px;
+    right: 16px;
+    top: 82px;
+  }
+
+  .toast {
+    width: 100%;
+  }
+
+  .inventoryGrid,
+  .skeletonMetrics,
+  .skeletonActions {
+    grid-template-columns: 1fr;
+  }
+}

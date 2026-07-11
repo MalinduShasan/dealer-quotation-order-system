@@ -11,7 +11,7 @@ export const initialFormState = {
   status: "active"
 };
 
-export function validateProductForm(values) {
+export function validateProductForm(values, { allowStockEdit = true } = {}) {
   const errors = {};
 
   if (!values.sku.trim()) errors.sku = "SKU is required";
@@ -27,7 +27,9 @@ export function validateProductForm(values) {
 
   if (!Number.isFinite(unitPrice) || unitPrice < 0) errors.unitPrice = "Unit price must be 0 or greater";
   if (!Number.isFinite(dealerPrice) || dealerPrice < 0) errors.dealerPrice = "Dealer price must be 0 or greater";
-  if (!Number.isFinite(stockQuantity) || stockQuantity < 0) errors.stockQuantity = "Stock quantity must be 0 or greater";
+  if (allowStockEdit && (!Number.isFinite(stockQuantity) || stockQuantity < 0)) {
+    errors.stockQuantity = "Stock quantity must be 0 or greater";
+  }
   if (!Number.isFinite(minimumStock) || minimumStock < 0) errors.minimumStock = "Minimum stock must be 0 or greater";
   if (!values.status) errors.status = "Status is required";
 
@@ -49,8 +51,8 @@ export function buildProductFormValues(product) {
   };
 }
 
-export function buildProductPayload(values) {
-  return {
+export function buildProductPayload(values, { includeStockQuantity = true } = {}) {
+  const payload = {
     sku: values.sku.trim(),
     name: values.name.trim(),
     description: values.description.trim(),
@@ -58,8 +60,13 @@ export function buildProductPayload(values) {
     brandId: values.brandId,
     unitPrice: Number(values.unitPrice),
     dealerPrice: Number(values.dealerPrice),
-    stockQuantity: Number(values.stockQuantity),
     minimumStock: Number(values.minimumStock),
     status: values.status
   };
+
+  if (includeStockQuantity) {
+    payload.stockQuantity = Number(values.stockQuantity);
+  }
+
+  return payload;
 }

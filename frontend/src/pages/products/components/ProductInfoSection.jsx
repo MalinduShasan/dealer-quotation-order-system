@@ -9,7 +9,15 @@ function InfoItem({ label, value, block = false, children }) {
   );
 }
 
-export default function ProductInfoSection({ product, isEditing = false, values, errors, categories = [], brands = [], onChange }) {
+export default function ProductInfoSection({
+  product,
+  isEditing = false,
+  values,
+  errors,
+  categories = [],
+  brands = [],
+  onChange
+}) {
   return (
     <section className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
@@ -31,7 +39,16 @@ export default function ProductInfoSection({ product, isEditing = false, values,
         <InfoItem label="SKU" value={product.sku}>
           {isEditing ? (
             <>
-              <input name="sku" className={styles.inlineInput} value={values.sku} onChange={onChange} />
+              <input
+                name="sku"
+                className={styles.inlineInput}
+                value={values.sku}
+                onChange={onChange}
+                disabled={product.hasTransactionHistory}
+              />
+              {product.hasTransactionHistory ? (
+                <span className={styles.inlineError}>SKU is locked because this product has inventory or sales history.</span>
+              ) : null}
               {errors.sku ? <span className={styles.inlineError}>{errors.sku}</span> : null}
             </>
           ) : null}

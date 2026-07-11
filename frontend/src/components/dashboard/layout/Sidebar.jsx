@@ -5,6 +5,7 @@ import {
   CategoriesIcon,
   DashboardIcon,
   DealersIcon,
+  InventoryIcon,
   LogoutIcon,
   NotificationsIcon,
   OrdersIcon,
@@ -23,6 +24,7 @@ const iconMap = {
   categories: CategoriesIcon,
   brands: BrandsIcon,
   products: ProductsIcon,
+  inventory: InventoryIcon,
   quotations: QuotationsIcon,
   orders: OrdersIcon,
   reports: ReportsIcon,
@@ -38,6 +40,7 @@ const routeMap = {
   categories: "/categories",
   brands: "/brands",
   products: "/products",
+  inventory: "/inventory",
   quotations: "/quotations"
 };
 
