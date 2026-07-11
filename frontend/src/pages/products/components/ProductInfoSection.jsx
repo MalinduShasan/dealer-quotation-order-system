@@ -27,6 +27,22 @@ export default function ProductInfoSection({
         </div>
       </div>
 
+      <div className={styles.productSummaryCard}>
+        <div className={styles.productSummaryTop}>
+          <div className={styles.productSummaryText}>
+            <h3 className={styles.productSummaryTitle}>{product.name}</h3>
+            <p className={styles.productSummarySubtitle}>
+              Commercial catalog details for pricing, classification, and product metadata.
+            </p>
+          </div>
+        </div>
+        <div className={styles.productSummaryMeta}>
+          <span className={styles.summaryChip}>SKU: {product.sku || "N/A"}</span>
+          <span className={styles.summaryChip}>Brand: {product.brandName || "N/A"}</span>
+          <span className={styles.summaryChip}>Category: {product.categoryName || "N/A"}</span>
+        </div>
+      </div>
+
       <div className={styles.infoGrid}>
         <InfoItem label="Name" value={product.name}>
           {isEditing ? (

@@ -1,6 +1,9 @@
 .page {
   display: grid;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  padding-bottom: 24px;
 }
 
 .headerCard,
@@ -152,27 +155,60 @@
 
 .contentGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.9fr);
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 0.8fr);
   gap: 24px;
+  align-items: start;
 }
 
 .mainColumn,
 .sideColumn {
   display: grid;
   gap: 24px;
+  min-width: 0;
+  align-content: start;
+}
+
+.overviewGrid,
+.detailsGrid {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+
+.overviewGrid {
+  grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.25fr);
+  align-items: stretch;
+}
+
+.detailsGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.sideColumn {
+  position: sticky;
+  top: 96px;
 }
 
 .imagePanel {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 .imageFrameWrap {
   display: grid;
-  gap: 12px;
+  gap: 10px;
+}
+
+.imageHint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
 }
 
 .imageButton {
+  width: 100%;
+  display: block;
   padding: 0;
   border: 0;
   background: transparent;
@@ -222,9 +258,12 @@
 }
 
 .imageFrame {
-  display: grid;
-  place-items: center;
-  height: 320px;
+  width: 100%;
+  height: clamp(280px, 38vw, 420px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   padding: 20px;
   border-radius: 22px;
   border: 1px solid var(--border-soft);
@@ -235,6 +274,8 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .placeholder {
@@ -260,6 +301,55 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  min-width: 0;
+}
+
+.productSummaryCard {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border-soft);
+  background: linear-gradient(180deg, var(--bg-card-muted) 0%, var(--bg-subtle) 100%);
+}
+
+.productSummaryTop,
+.productSummaryText,
+.productSummaryMeta {
+  display: grid;
+  gap: 10px;
+}
+
+.productSummaryTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.6vw, 1.6rem);
+  font-weight: 600;
+}
+
+.productSummarySubtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.productSummaryMeta {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.summaryChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 500;
 }
 
 .sideInfoGrid {
@@ -330,6 +420,7 @@
 .progressBlock {
   display: grid;
   gap: 16px;
+  min-width: 0;
 }
 
 .progressMeta {
@@ -337,6 +428,7 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .progressTrack {
@@ -355,7 +447,74 @@
 }
 
 .actionStack {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
+}
+
+.compactEmptyState {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px dashed var(--border-soft);
+  background: var(--bg-card-muted);
+  color: var(--text-secondary);
+}
+
+.compactEmptyState p {
+  margin: 0;
+}
+
+.recentMovementsTableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.recentMovementsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recentMovementsTable th,
+.recentMovementsTable td {
+  padding: 13px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: top;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.recentMovementsTable th {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.recentMovementsMobile {
+  display: none;
+}
+
+.recentMovementCardList {
+  display: grid;
+  gap: 14px;
+}
+
+.recentMovementCard {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+}
+
+.recentMovementDate {
+  color: var(--text-primary);
+}
+
+.recentMovementMeta {
+  margin: 0;
+  color: var(--text-secondary);
 }
 
 .confirmOverlay {
@@ -424,6 +583,16 @@
   .contentGrid {
     grid-template-columns: 1fr;
   }
+
+  .sideColumn {
+    position: static;
+    top: auto;
+  }
+
+  .overviewGrid,
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
@@ -441,6 +610,18 @@
   .headerBody {
     display: grid;
   }
+
+  .recentMovementsDesktop {
+    display: none;
+  }
+
+  .recentMovementsMobile {
+    display: block;
+  }
+
+  .productSummaryMeta {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -451,7 +632,7 @@
   }
 
   .imageFrame {
-    height: 240px;
+    height: min(280px, 70vw);
   }
 
   .toastStack {

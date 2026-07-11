@@ -100,6 +100,7 @@ export default function InventoryManagement({ theme, onToggleTheme }) {
   const [adjustmentErrors, setAdjustmentErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [toasts, setToasts] = useState([]);
+  const [pendingInitialProductId, setPendingInitialProductId] = useState(initialProductId);
 
   const canManage = ["admin", "manager"].includes(user?.role);
   const todayMovements = useMemo(() => {
@@ -291,9 +292,9 @@ export default function InventoryManagement({ theme, onToggleTheme }) {
 
   useEffect(() => {
     const openInitialHistory = async () => {
-      if (!user?.token || initialProductId === "all" || selectedProductHistory) return;
+      if (!user?.token || pendingInitialProductId === "all" || selectedProductHistory) return;
 
-      const knownProduct = items.find((item) => item.id === initialProductId);
+      const knownProduct = items.find((item) => item.id === pendingInitialProductId);
       if (!knownProduct) return;
 
       setSelectedProductHistory(knownProduct);
@@ -307,11 +308,15 @@ export default function InventoryManagement({ theme, onToggleTheme }) {
         setProductHistoryError(loadError.response?.data?.message || "Failed to load product history");
       } finally {
         setProductHistoryLoading(false);
+        setPendingInitialProductId("all");
+        if (location.state?.inventoryState?.productId) {
+          navigate(location.pathname, { replace: true, state: {} });
+        }
       }
     };
 
     openInitialHistory();
-  }, [initialProductId, items, selectedProductHistory, user]);
+  }, [items, location.pathname, location.state, navigate, pendingInitialProductId, selectedProductHistory, user]);
 
   return (
     <div className={shellStyles.dashboardShell}>
@@ -496,6 +501,7 @@ export default function InventoryManagement({ theme, onToggleTheme }) {
           setSelectedProductHistory(null);
           setProductHistoryItems([]);
           setProductHistoryError("");
+          setPendingInitialProductId("all");
         }}
       />
     </div>

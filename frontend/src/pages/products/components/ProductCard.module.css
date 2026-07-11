@@ -1,16 +1,16 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 18px;
+  gap: 16px;
 }
 
 .card {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   padding: 18px;
-  border-radius: 20px;
+  border-radius: 18px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card);
   box-shadow: var(--shadow-soft);
@@ -24,20 +24,48 @@
   border-color: var(--accent-primary);
 }
 
+.cardTopRow {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.statusCorner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.imageContainer {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.imageFrame {
+  width: 100%;
+}
+
 .imageWrap {
-  display: grid;
-  place-items: center;
-  height: 160px;
-  padding: 16px;
-  border-radius: 18px;
+  width: 100%;
+  height: clamp(170px, 20vw, 220px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  border-radius: 16px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
+  overflow: hidden;
 }
 
 .image {
-  width: 122%;
-  height: 122%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .placeholder {
@@ -50,99 +78,109 @@
 
 .content {
   display: grid;
-  gap: 12px;
+  gap: 0;
   flex: 1;
 }
 
 .header {
-  display: grid;
-  gap: 8px;
-}
-
-.titleRow {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+  flex-direction: column;
+  gap: 0;
 }
 
 .title {
   margin: 0;
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 0.98rem;
   line-height: 1.35;
+  margin-bottom: 6px;
 }
 
 .meta {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   min-width: 0;
   width: 100%;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 
 .metaText {
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.pricingGrid,
-.inventoryGrid {
+.infoSection {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
-.metric {
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 1px solid var(--border-soft);
-  background: var(--bg-card-muted);
-  display: grid;
-  gap: 4px;
+.infoSection + .infoSection {
+  margin-top: 10px;
 }
 
-.metricLabel {
+.infoSection:last-child {
+  margin-bottom: 10px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--border-table);
+}
+
+.infoRow:last-child {
+  border-bottom: 0;
+}
+
+.infoLabel {
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
 }
 
-.metricValue {
+.infoValue {
   color: var(--text-primary);
-  font-size: 0.94rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  text-align: right;
 }
 
 .footer {
   margin-top: auto;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 12px;
 }
 
-.iconButton {
-  width: 44px;
-  height: 44px;
+.viewButton {
+  min-height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
+  gap: 6px;
+  border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--bg-subtle);
   color: var(--text-primary);
   font: inherit;
+  font-size: 0.84rem;
   cursor: pointer;
   transition: transform var(--transition-base), border-color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base);
+  padding: 0 12px;
 }
 
-.iconButton:hover,
-.iconButton:focus-visible {
+.viewButton:hover,
+.viewButton:focus-visible {
   transform: translateY(-1px);
   border-color: var(--accent-primary);
   box-shadow: var(--shadow-soft);
@@ -156,19 +194,40 @@
 
 @media (max-width: 640px) {
   .card {
-    padding: 16px;
+    padding: 18px;
   }
 
   .imageWrap {
-    height: 148px;
+    height: 180px;
   }
 
-  .footer {
-    flex-direction: column;
-    align-items: stretch;
+  .grid {
+    grid-template-columns: 1fr;
   }
 
   .footer {
     justify-content: flex-end;
+  }
+
+  .meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .imageWrap {
+    height: 190px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

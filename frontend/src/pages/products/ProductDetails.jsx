@@ -29,7 +29,6 @@ import ProductInventorySection from "./components/ProductInventorySection";
 import ProductPricingSection from "./components/ProductPricingSection";
 import RestockModal from "../inventory/components/RestockModal";
 import StockAdjustmentModal from "../inventory/components/StockAdjustmentModal";
-import StockMovementHistory from "../inventory/components/StockMovementHistory";
 import {
   buildProductFormValues,
   buildProductPayload,
@@ -90,6 +89,86 @@ function formatDate(value) {
     month: "short",
     day: "numeric"
   }).format(new Date(value));
+}
+
+function formatDateTime(value) {
+  if (!value) return "N/A";
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(new Date(value));
+}
+
+function RecentMovementsSection({ items, onViewFullHistory }) {
+  return (
+    <section className={styles.sectionCard}>
+      <div className={styles.sectionHeader}>
+        <div>
+          <p className={styles.eyebrow}>Inventory</p>
+          <h2 className={styles.sectionTitle}>Recent Stock Movements</h2>
+        </div>
+        <button type="button" className={styles.secondaryButton} onClick={onViewFullHistory}>
+          View Full History
+        </button>
+      </div>
+
+      {items.length === 0 ? (
+        <div className={styles.compactEmptyState}>
+          <strong>No stock movements yet</strong>
+          <p>The latest 5 stock changes will appear here once inventory activity begins.</p>
+        </div>
+      ) : (
+        <>
+          <div className={styles.recentMovementsDesktop}>
+            <div className={styles.recentMovementsTableWrap}>
+              <table className={styles.recentMovementsTable}>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Movement Type</th>
+                    <th>Quantity</th>
+                    <th>Previous Stock</th>
+                    <th>New Stock</th>
+                    <th>Changed By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item) => (
+                    <tr key={item.id}>
+                      <td>{formatDateTime(item.createdAt)}</td>
+                      <td>{item.movementType.replaceAll("_", " ")}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.previousQuantity}</td>
+                      <td>{item.newQuantity}</td>
+                      <td>{item.createdByName || "System"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className={styles.recentMovementsMobile}>
+            <div className={styles.recentMovementCardList}>
+              {items.map((item) => (
+                <article key={item.id} className={styles.recentMovementCard}>
+                  <strong className={styles.recentMovementDate}>{formatDateTime(item.createdAt)}</strong>
+                  <p className={styles.recentMovementMeta}>Type: {item.movementType.replaceAll("_", " ")}</p>
+                  <p className={styles.recentMovementMeta}>Quantity: {item.quantity}</p>
+                  <p className={styles.recentMovementMeta}>Previous: {item.previousQuantity}</p>
+                  <p className={styles.recentMovementMeta}>New: {item.newQuantity}</p>
+                  <p className={styles.recentMovementMeta}>Changed By: {item.createdByName || "System"}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </section>
+  );
 }
 
 export default function ProductDetails({ theme, onToggleTheme }) {
@@ -556,49 +635,56 @@ export default function ProductDetails({ theme, onToggleTheme }) {
 
                 <div className={styles.contentGrid}>
                   <div className={styles.mainColumn}>
-                    <ProductInfoSection
-                      product={product}
-                      isEditing={isEditing}
-                      values={formValues}
-                      errors={formErrors}
-                      categories={getFormCategories()}
-                      brands={getFormBrands()}
-                      onChange={handleFormChange}
-                    />
-                    <ProductPricingSection
-                      product={product}
-                      isEditing={isEditing}
-                      values={formValues}
-                      errors={formErrors}
-                      onChange={handleFormChange}
-                    />
-                    <ProductInventorySection
-                      product={product}
-                      isEditing={isEditing}
-                      values={formValues}
-                      errors={formErrors}
-                      onChange={handleFormChange}
-                    />
+                    <div className={styles.overviewGrid}>
+                      <ProductImageSection
+                        product={product}
+                        canManage={canManageProducts}
+                        onPreview={openImagePreview}
+                        loading={imageUploading}
+                        isEditing={isEditing}
+                        imagePreviewUrl={imagePreviewUrl || (imageRemoved ? "" : product?.imageUrl || "")}
+                        imageError={formErrors.image}
+                        onImageSelect={handleImageSelect}
+                        onImageRemove={handleImageRemove}
+                        hasImage={!imageRemoved && Boolean(imagePreviewUrl || product?.imageUrl)}
+                      />
+                      <ProductInfoSection
+                        product={product}
+                        isEditing={isEditing}
+                        values={formValues}
+                        errors={formErrors}
+                        categories={getFormCategories()}
+                        brands={getFormBrands()}
+                        onChange={handleFormChange}
+                      />
+                    </div>
+                    <div className={styles.detailsGrid}>
+                      <ProductPricingSection
+                        product={product}
+                        isEditing={isEditing}
+                        values={formValues}
+                        errors={formErrors}
+                        onChange={handleFormChange}
+                      />
+                      <ProductInventorySection
+                        product={product}
+                        isEditing={isEditing}
+                        values={formValues}
+                        errors={formErrors}
+                        onChange={handleFormChange}
+                      />
+                    </div>
                     {movementLoading ? <div className={styles.stateCard}>Loading stock movement history...</div> : null}
                     {!movementLoading && movementError ? <div className={`${styles.stateCard} ${styles.errorCard}`}>{movementError}</div> : null}
                     {!movementLoading && !movementError ? (
-                      <StockMovementHistory items={movements} title="Recent Stock Movements" compact showProduct={false} />
+                      <RecentMovementsSection
+                        items={movements}
+                        onViewFullHistory={() => navigate("/inventory", { state: { inventoryState: { productId: product.id } } })}
+                      />
                     ) : null}
                   </div>
 
                   <div className={styles.sideColumn}>
-                    <ProductImageSection
-                      product={product}
-                      canManage={canManageProducts}
-                      onPreview={openImagePreview}
-                      loading={imageUploading}
-                      isEditing={isEditing}
-                      imagePreviewUrl={imagePreviewUrl || (imageRemoved ? "" : product?.imageUrl || "")}
-                      imageError={formErrors.image}
-                      onImageSelect={handleImageSelect}
-                      onImageRemove={handleImageRemove}
-                      hasImage={!imageRemoved && Boolean(imagePreviewUrl || product?.imageUrl)}
-                    />
                     <ProductDetailActions
                       canManage={canManageProducts}
                       product={product}

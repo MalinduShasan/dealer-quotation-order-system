@@ -2,10 +2,7 @@
   height: 100vh;
   display: grid;
   grid-template-columns: auto 1fr;
-  background:
-    radial-gradient(circle at top left, rgba(168, 147, 100, 0.08), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(84, 110, 146, 0.08), transparent 22%),
-    var(--bg-primary);
+  background: var(--bg-page-glow-a), var(--bg-page-glow-b), var(--bg-primary);
   overflow: hidden;
 }
 

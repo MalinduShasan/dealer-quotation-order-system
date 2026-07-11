@@ -73,6 +73,7 @@
   height: 40px;
   display: grid;
   place-items: center;
+  display: none;
 }
 
 .badge {
@@ -169,6 +170,10 @@
 @media (max-width: 1180px) {
   .navbar {
     grid-template-columns: 1fr;
+  }
+
+  .iconButton {
+    display: grid;
   }
 
   .searchBar {

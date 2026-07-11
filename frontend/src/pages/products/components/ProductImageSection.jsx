@@ -49,6 +49,7 @@ export default function ProductImageSection({
               )}
             </div>
           </button>
+          <p className={styles.imageHint}>Click the image to preview it in full size.</p>
           {canManage && isEditing ? (
             <div className={styles.imageEditActions}>
               <button
