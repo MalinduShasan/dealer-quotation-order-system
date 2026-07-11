@@ -7,6 +7,7 @@ import DashboardFooter from "../../components/dashboard/DashboardFooter";
 import shellStyles from "../../components/dashboard/AdminDashboard.module.css";
 import styles from "./ProductDetails.module.css";
 import {
+  deleteProductImage,
   getProductById,
   updateProduct,
   updateProductStatus,
@@ -301,12 +302,25 @@ export default function ProductDetails({ theme, onToggleTheme }) {
     setPreviewObjectUrl(file);
   };
 
+  const handleImageRemove = () => {
+    setSelectedImageFile(null);
+    setImageRemoved(true);
+    setFormErrors((current) => ({ ...current, image: "" }));
+    setPreviewObjectUrl(null);
+  };
+
   const syncProductImage = async () => {
     if (!product) return product;
 
     if (selectedImageFile) {
       setImageUploading(true);
       await uploadProductImage(user.token, product.id, selectedImageFile);
+      return refreshProduct();
+    }
+
+    if (imageRemoved && product.imageUrl) {
+      setImageUploading(true);
+      await deleteProductImage(user.token, product.id);
       return refreshProduct();
     }
 
@@ -468,6 +482,8 @@ export default function ProductDetails({ theme, onToggleTheme }) {
                       imagePreviewUrl={imagePreviewUrl || (imageRemoved ? "" : product?.imageUrl || "")}
                       imageError={formErrors.image}
                       onImageSelect={handleImageSelect}
+                      onImageRemove={handleImageRemove}
+                      hasImage={!imageRemoved && Boolean(imagePreviewUrl || product?.imageUrl)}
                     />
                     <ProductDetailActions
                       canManage={canManageProducts}

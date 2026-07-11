@@ -9,7 +9,9 @@ export default function ProductImageSection({
   isEditing = false,
   imagePreviewUrl = "",
   imageError = "",
-  onImageSelect
+  onImageSelect,
+  onImageRemove,
+  hasImage = false
 }) {
   const inputRef = useRef(null);
 
@@ -48,14 +50,24 @@ export default function ProductImageSection({
             </div>
           </button>
           {canManage && isEditing ? (
-            <button
-              type="button"
-              className={styles.imageReplaceButton}
-              onClick={openPicker}
-              disabled={loading}
-            >
-              {loading ? "Updating..." : "Replace Image"}
-            </button>
+            <div className={styles.imageEditActions}>
+              <button
+                type="button"
+                className={styles.imageReplaceButton}
+                onClick={openPicker}
+                disabled={loading}
+              >
+                {loading ? "Updating..." : "Replace Image"}
+              </button>
+              <button
+                type="button"
+                className={styles.imageRemoveButton}
+                onClick={onImageRemove}
+                disabled={loading || !hasImage}
+              >
+                Remove Image
+              </button>
+            </div>
           ) : null}
         </div>
 

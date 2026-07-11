@@ -190,6 +190,33 @@
   cursor: pointer;
 }
 
+.imageEditActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.imageRemoveButton {
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+  padding: 10px 14px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), border-color var(--transition-base), opacity var(--transition-base);
+}
+
+.imageRemoveButton:hover {
+  transform: translateY(-1px);
+}
+
+.imageRemoveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .hiddenInput {
   display: none;
 }
