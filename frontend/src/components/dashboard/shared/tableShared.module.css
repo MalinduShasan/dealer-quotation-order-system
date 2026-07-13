@@ -1,6 +1,6 @@
 .card {
   padding: 18px;
-  border-radius: 20px;
+  border-radius: 16px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card);
   box-shadow: var(--shadow-soft);
@@ -53,4 +53,13 @@
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
+  background: var(--bg-card-soft);
+}
+
+.table tbody tr {
+  transition: background var(--transition-base);
+}
+
+.table tbody tr:hover {
+  background: var(--bg-accent-soft);
 }

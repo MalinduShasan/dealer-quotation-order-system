@@ -10,7 +10,7 @@
   flex-direction: column;
   gap: 0;
   padding: 18px;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card);
   box-shadow: var(--shadow-soft);
@@ -20,8 +20,8 @@
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-medium, var(--shadow-soft));
-  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-lifted);
+  border-color: var(--border-strong);
 }
 
 .cardTopRow {
@@ -54,7 +54,7 @@
   justify-content: center;
   width: 100%;
   padding: 10px;
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
   overflow: hidden;
@@ -169,9 +169,9 @@
   justify-content: center;
   gap: 6px;
   border-radius: 12px;
-  border: 1px solid var(--border-soft);
-  background: var(--bg-subtle);
-  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
   font: inherit;
   font-size: 0.84rem;
   cursor: pointer;
@@ -182,9 +182,9 @@
 .viewButton:hover,
 .viewButton:focus-visible {
   transform: translateY(-1px);
-  border-color: var(--accent-primary);
+  border-color: var(--accent-hover);
   box-shadow: var(--shadow-soft);
-  background: var(--bg-card-muted);
+  background: var(--accent-hover);
 }
 
 .icon {

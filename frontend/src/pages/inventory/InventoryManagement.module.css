@@ -13,7 +13,7 @@
 .toast {
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
-  border-radius: 22px;
+  border-radius: 16px;
   box-shadow: var(--shadow-soft);
 }
 
@@ -45,7 +45,7 @@
 .heroMetric {
   background: var(--bg-card-muted);
   border: 1px solid var(--border-soft);
-  border-radius: 18px;
+  border-radius: 14px;
   padding: 16px;
 }
 
@@ -80,7 +80,7 @@
   width: 100%;
   min-width: 0;
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--bg-input);
   color: var(--text-primary);
@@ -104,7 +104,7 @@
 
 .primaryButton,
 .secondaryButton {
-  border-radius: 14px;
+  border-radius: 12px;
   min-height: 44px;
   padding: 11px 16px;
   font: inherit;
@@ -114,7 +114,7 @@
 
 .primaryButton {
   border: 1px solid var(--border-strong);
-  background: var(--bg-accent-gradient);
+  background: var(--accent-primary);
   color: var(--text-on-accent);
 }
 
@@ -180,7 +180,7 @@
 .emptyBlock,
 .emptyStateCard {
   padding: 24px;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
   color: var(--text-secondary);
@@ -220,6 +220,10 @@
   color: var(--text-primary);
 }
 
+.movementTable th {
+  background: var(--bg-card-soft);
+}
+
 .movementCardList {
   display: grid;
   gap: 14px;
@@ -227,7 +231,7 @@
 
 .movementCard {
   padding: 16px;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
 }
@@ -251,7 +255,7 @@
 
 .skeletonCard {
   padding: 20px;
-  border-radius: 22px;
+  border-radius: 16px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card);
   box-shadow: var(--shadow-soft);
@@ -264,7 +268,7 @@
 .skeletonLineMd,
 .skeletonMetric,
 .skeletonButton {
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--bg-card-muted);
 }
 
@@ -336,6 +340,20 @@
   display: grid;
   place-items: center;
   z-index: 50;
+}
+
+.fieldInput:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-accent-ring);
+}
+
+.movementTable tbody tr {
+  transition: background var(--transition-base);
+}
+
+.movementTable tbody tr:hover {
+  background: var(--bg-accent-soft);
 }
 
 .modalCard {

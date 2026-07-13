@@ -10,6 +10,7 @@
   padding: 12px 24px;
   border-bottom: 1px solid var(--border-soft);
   background: var(--bg-navbar);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
 
 .leftGroup,
@@ -45,6 +46,13 @@
   border: 1px solid var(--border-soft);
   background: var(--bg-input);
   color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), background var(--transition-base);
+}
+
+.searchInput:focus {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-accent-ring);
 }
 
 .searchIcon {
@@ -63,8 +71,9 @@
   border: 1px solid var(--border-soft);
   background: var(--bg-subtle);
   color: var(--text-primary);
-  border-radius: 18px;
+  border-radius: 12px;
   cursor: pointer;
+  transition: border-color var(--transition-base), background var(--transition-base), transform var(--transition-base);
 }
 
 .iconButton {
@@ -88,6 +97,7 @@
   font-size: 0.72rem;
   background: var(--accent-primary);
   color: var(--text-accent-contrast);
+  border: 1px solid var(--accent-primary);
 }
 
 .themeButton {
@@ -113,7 +123,7 @@
   height: 34px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--bg-accent-soft);
 }
 
@@ -136,7 +146,7 @@
   padding: 14px;
   display: grid;
   gap: 10px;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid var(--border-soft);
   background: var(--bg-panel-strong);
   box-shadow: var(--shadow-dropdown);
@@ -151,7 +161,7 @@
 
 .dropdown button {
   border: 0;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 10px 12px;
   background: var(--bg-danger-soft);
   color: var(--text-danger);
@@ -160,6 +170,14 @@
 
 .dropdown button:hover {
   border-color: var(--border-strong);
+}
+
+.iconButton:hover,
+.themeButton:hover,
+.profileButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background: var(--bg-card-soft);
 }
 
 .icon {

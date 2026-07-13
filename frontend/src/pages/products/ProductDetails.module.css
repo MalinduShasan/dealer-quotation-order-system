@@ -13,7 +13,7 @@
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   box-shadow: var(--shadow-soft);
-  border-radius: 22px;
+  border-radius: 16px;
 }
 
 .headerCard,
@@ -42,7 +42,7 @@
 .dangerButton,
 .disabledButton,
 .toast button {
-  border-radius: 14px;
+  border-radius: 12px;
   font: inherit;
   cursor: pointer;
   transition: transform var(--transition-base), border-color var(--transition-base), opacity var(--transition-base);
@@ -59,7 +59,7 @@
 
 .primaryButton {
   border: 1px solid var(--border-strong);
-  background: var(--bg-accent-gradient);
+  background: var(--accent-primary);
   color: var(--text-on-accent);
 }
 
@@ -217,7 +217,7 @@
 
 .imageReplaceButton {
   justify-self: start;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--bg-subtle);
   color: var(--text-primary);
@@ -233,7 +233,7 @@
 }
 
 .imageRemoveButton {
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--bg-danger-soft);
   color: var(--text-danger);
@@ -265,7 +265,7 @@
   justify-content: center;
   overflow: hidden;
   padding: 20px;
-  border-radius: 22px;
+  border-radius: 16px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
 }
@@ -309,9 +309,9 @@
   gap: 14px;
   margin-bottom: 18px;
   padding: 18px;
-  border-radius: 20px;
+  border-radius: 16px;
   border: 1px solid var(--border-soft);
-  background: linear-gradient(180deg, var(--bg-card-muted) 0%, var(--bg-subtle) 100%);
+  background: var(--bg-card-soft);
 }
 
 .productSummaryTop,
@@ -344,7 +344,7 @@
   align-items: center;
   min-height: 42px;
   padding: 10px 14px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card);
   color: var(--text-primary);
@@ -360,7 +360,7 @@
   display: grid;
   gap: 6px;
   padding: 16px;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
 }
@@ -380,7 +380,7 @@
   width: 100%;
   min-width: 0;
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--bg-input);
   color: var(--text-primary);
@@ -411,7 +411,7 @@
   display: grid;
   gap: 6px;
   padding: 16px;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
 }
@@ -443,7 +443,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--bg-accent-gradient);
+  background: var(--accent-primary);
 }
 
 .actionStack {
@@ -454,7 +454,7 @@
   display: grid;
   gap: 8px;
   padding: 18px;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px dashed var(--border-soft);
   background: var(--bg-card-muted);
   color: var(--text-secondary);
@@ -472,6 +472,10 @@
 .recentMovementsTable {
   width: 100%;
   border-collapse: collapse;
+}
+
+.recentMovementsTable thead th {
+  background: var(--bg-card-soft);
 }
 
 .recentMovementsTable th,
@@ -503,7 +507,7 @@
   display: grid;
   gap: 6px;
   padding: 16px;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px solid var(--border-soft);
   background: var(--bg-card-muted);
 }
@@ -566,7 +570,7 @@
 
 .stateCard {
   padding: 36px 24px;
-  border-radius: 22px;
+  border-radius: 16px;
   border: 1px dashed var(--border-soft);
   background: var(--bg-card-muted);
   color: var(--text-secondary);
@@ -577,6 +581,20 @@
   border-style: solid;
   background: var(--bg-danger-soft);
   color: var(--text-danger);
+}
+
+.inlineInput:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-accent-ring);
+}
+
+.recentMovementsTable tbody tr {
+  transition: background var(--transition-base);
+}
+
+.recentMovementsTable tbody tr:hover {
+  background: var(--bg-accent-soft);
 }
 
 @media (max-width: 1100px) {

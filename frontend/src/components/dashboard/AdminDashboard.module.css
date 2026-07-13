@@ -30,7 +30,7 @@
   padding: 20px 24px;
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
-  border-radius: 22px;
+  border-radius: 16px;
   box-shadow: var(--shadow-soft);
 }
 
@@ -61,7 +61,7 @@
   display: grid;
   gap: 6px;
   padding: 14px 16px;
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--bg-card-muted);
   border: 1px solid var(--border-soft);
   color: var(--text-secondary);
