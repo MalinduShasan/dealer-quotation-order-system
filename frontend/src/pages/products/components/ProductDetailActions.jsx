@@ -31,7 +31,7 @@ export default function ProductDetailActions({
             >
               {product.status === "active" ? "Deactivate Product" : "Activate Product"}
             </button>
-            <button type="button" className={styles.secondaryButton} onClick={() => onRestock(product)}>
+            <button type="button" className={styles.primaryButton} onClick={() => onRestock(product)}>
               Restock
             </button>
             <button type="button" className={styles.secondaryButton} onClick={() => onAdjust(product)}>

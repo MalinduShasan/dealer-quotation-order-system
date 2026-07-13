@@ -24,6 +24,13 @@ export default function ProductDetailHeader({ product, onBack, canManage, onEdit
           </button>
         ) : null}
       </div>
+      <div className={styles.headerBody}>
+        <div className={styles.headerText}>
+          <p className={styles.eyebrow}>Product Details</p>
+          <h1 className={styles.title}>{product.name}</h1>
+          <span className={styles.sku}>SKU: {product.sku || "N/A"}</span>
+        </div>
+      </div>
     </section>
   );
 }
