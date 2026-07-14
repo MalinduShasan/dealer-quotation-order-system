@@ -1,0 +1,505 @@
+.page {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+  color: var(--text-primary);
+}
+
+.heroCard,
+.toolbarCard,
+.tableCard,
+.modalCard,
+.toast,
+.summaryCard,
+.quotationCard,
+.confirmCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+}
+
+.heroCard,
+.toolbarCard,
+.tableCard,
+.modalCard,
+.confirmCard {
+  padding: 24px;
+}
+
+.heroCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.heroTitle,
+.sectionTitle,
+.modalTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.heroTitle {
+  font-size: clamp(1.45rem, 2vw, 1.9rem);
+}
+
+.heroText,
+.mutedText,
+.primaryCell span,
+.cardSubtle,
+.emptyState p,
+.toast p,
+.timelineNote {
+  color: var(--text-secondary);
+}
+
+.sectionEyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.74rem;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+.summaryCard {
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.summaryCardWide {
+  grid-column: span 2;
+}
+
+.summaryLabel {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.summaryValue {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.6fr) repeat(4, minmax(150px, 1fr)) auto;
+  gap: 12px;
+}
+
+.filterInput,
+.modalInput,
+.modalTextArea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.modalTextArea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.actionButton,
+.iconButton,
+.modalCloseButton,
+.toast button,
+.dropdownAction {
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), border-color var(--transition-base), opacity var(--transition-base);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  min-height: 44px;
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+
+.primaryButton {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-accent-gradient);
+  color: var(--text-on-accent);
+}
+
+.secondaryButton,
+.actionButton,
+.iconButton,
+.modalCloseButton,
+.toast button {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.dangerButton {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+.table th,
+.table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border-table);
+  text-align: left;
+  vertical-align: top;
+  color: var(--text-primary);
+}
+
+.table th {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.primaryCell {
+  display: grid;
+  gap: 4px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.statusSuccess {
+  background: var(--bg-success-soft);
+  color: var(--text-success);
+}
+
+.statusWarning {
+  background: var(--bg-warning-soft);
+  color: var(--text-warning);
+}
+
+.statusDanger {
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.statusNeutral {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.actionMenuWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.actionButton {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 12px;
+}
+
+.iconButton {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.actionDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-dropdown);
+  display: grid;
+  gap: 6px;
+  z-index: 12;
+}
+
+.dropdownAction {
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.dropdownAction:hover {
+  background: var(--bg-subtle);
+}
+
+.moreDots {
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.actionIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.cardGrid {
+  display: none;
+  gap: 14px;
+}
+
+.quotationCard {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.cardTitle {
+  color: var(--text-primary);
+}
+
+.cardMeta {
+  display: grid;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.cardTotal {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.emptyState,
+.stateBlock {
+  padding: 30px 24px;
+  text-align: center;
+  border: 1px dashed var(--border-soft);
+  border-radius: 18px;
+  background: var(--bg-card-muted);
+}
+
+.paginationRow,
+.modalHeader,
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.paginationRow {
+  margin-top: 16px;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  padding: 24px;
+  background: var(--bg-backdrop);
+  display: grid;
+  place-items: center;
+  z-index: 40;
+}
+
+.modalCard {
+  width: min(100%, 920px);
+  max-height: min(90vh, 860px);
+  overflow: auto;
+}
+
+.modalContent {
+  display: grid;
+  gap: 18px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.detailCard {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+  display: grid;
+  gap: 6px;
+}
+
+.detailCardWide {
+  grid-column: 1 / -1;
+}
+
+.detailLabel {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.itemsList,
+.timelineList {
+  display: grid;
+  gap: 10px;
+}
+
+.itemCard,
+.timelineItem {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card-muted);
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.toastStack {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 40;
+  display: grid;
+  gap: 12px;
+}
+
+.toast {
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.toast strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.success {
+  border-color: var(--accent-success);
+}
+
+.error {
+  border-color: var(--accent-danger);
+}
+
+@media (max-width: 1100px) {
+  .filterGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .heroCard,
+  .toolbarCard,
+  .tableCard,
+  .modalCard,
+  .confirmCard {
+    padding: 18px;
+  }
+
+  .tableWrap {
+    display: none;
+  }
+
+  .cardGrid {
+    display: grid;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .filterGrid,
+  .modalActions,
+  .paginationRow {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .toastStack {
+    left: 16px;
+    right: 16px;
+    top: 82px;
+  }
+
+  .toast {
+    width: 100%;
+  }
+
+  .summaryCardWide {
+    grid-column: span 1;
+  }
+}

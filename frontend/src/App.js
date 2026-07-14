@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Quotations from "./pages/Quotations";
+import QuotationManagement from "./pages/quotations/QuotationManagement";
 import UserManagement from "./pages/users/UserManagement";
 import DealerManagement from "./pages/dealers/DealerManagement";
 import CategoryManagement from "./pages/categories/CategoryManagement";
@@ -43,8 +43,11 @@ function App() {
           <Route
             path="/quotations"
             element={
-              <PrivateRoute role="dealer">
-                <Quotations />
+              <PrivateRoute role={["admin", "manager", "sales_executive", "dealer"]}>
+                <QuotationManagement
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
               </PrivateRoute>
             }
           />
