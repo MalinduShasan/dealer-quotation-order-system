@@ -1113,6 +1113,82 @@
   border-left-color: var(--text-danger);
 }
 
+.success {
+  border-color: var(--accent-success);
+}
+
+.error {
+  border-color: var(--accent-danger);
+}
+
+.toastStack {
+  top: 88px;
+  right: 24px;
+  bottom: auto;
+  left: auto;
+  display: grid;
+  gap: 12px;
+  max-width: none;
+}
+
+.toast {
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 18px;
+  justify-content: space-between;
+  gap: 14px;
+  animation: none;
+}
+
+.toast strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.toast p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.toast button {
+  padding: 8px 10px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.dialog {
+  width: min(100%, 760px);
+  max-height: min(90vh, 860px);
+  border-radius: 22px;
+  display: grid;
+}
+
+.dialogHeader {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-table);
+}
+
+.profileGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 20px 8px;
+  background: transparent;
+  overflow-y: visible;
+}
+
+.profileItem {
+  background: var(--bg-card-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 14px 16px;
+  gap: 6px;
+}
+
 .filterSelect:focus-visible,
 .btnPrimary:focus-visible,
 .btnSecondary:focus-visible,

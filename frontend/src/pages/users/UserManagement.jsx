@@ -103,14 +103,14 @@ function Avatar({ name }) {
 function ToastStack({ toasts, onDismiss }) {
   return (
     <div className={styles.toastStack}>
-      {toasts.map((t) => (
-        <div key={t.id} className={`${styles.toast} ${styles[`toast_${t.type}`]}`}>
-          <div className={styles.toastBody}>
-            <strong className={styles.toastTitle}>{t.title}</strong>
-            <span className={styles.toastMsg}>{t.message}</span>
+      {toasts.map((toast) => (
+        <div key={toast.id} className={`${styles.toast} ${styles[toast.type] || styles[`toast_${toast.type}`]}`}>
+          <div>
+            <strong>{toast.title}</strong>
+            <p>{toast.message}</p>
           </div>
-          <button type="button" className={styles.toastDismiss} onClick={() => onDismiss(t.id)} aria-label="Dismiss">
-            ✕
+          <button type="button" onClick={() => onDismiss(toast.id)}>
+            Dismiss
           </button>
         </div>
       ))}
@@ -300,10 +300,12 @@ function DealerProfileModal({ isOpen, profile, loading, onClose }) {
       <div className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="dp-view-title">
         <div className={styles.dialogHeader}>
           <div>
-            <p className={styles.drawerEyebrow}>Dealer profile</p>
-            <h2 id="dp-view-title" className={styles.drawerTitle}>Profile details</h2>
+            <p className={styles.drawerEyebrow}>Dealer Profile</p>
+            <h2 id="dp-view-title" className={styles.drawerTitle}>Linked dealer profile</h2>
           </div>
-          <button type="button" className={styles.drawerClose} onClick={onClose} aria-label="Close">✕</button>
+          <button type="button" className={styles.btnSecondary} onClick={onClose}>
+            Close
+          </button>
         </div>
 
         {loading && <div className={styles.stateMsg}>Loading profile…</div>}
@@ -344,6 +346,12 @@ function DealerProfileModal({ isOpen, profile, loading, onClose }) {
         {!loading && !profile && (
           <div className={styles.stateMsg}>No profile data available.</div>
         )}
+
+        <div className={styles.drawerFooter}>
+          <button type="button" className={styles.btnSecondary} onClick={onClose}>
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -634,7 +642,7 @@ export default function UserManagement({ theme, onToggleTheme }) {
             <span className={styles.dealerCode}>{entry.dealerCode}</span>
             <span className={styles.dealerCompany}>{entry.companyName}</span>
             <button type="button" className={styles.linkBtn} onClick={() => openProfileView(entry)}>
-              View profile →
+              View Profile
             </button>
           </div>
         )}
