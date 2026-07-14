@@ -185,7 +185,9 @@ const mapQuotationWithItems = (quotation) => {
             unitPrice: item.product.unit_price,
             dealerPrice: item.product.dealer_price,
             imageUrl: item.product.image_url || null,
-            status: item.product.status || null
+            status: item.product.status || null,
+            stockQuantity: item.product.stock_quantity ?? null,
+            minimumStock: item.product.minimum_stock ?? null
           }
         : null,
       quantity: item.quantity,

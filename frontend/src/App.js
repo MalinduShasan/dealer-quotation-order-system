@@ -11,6 +11,8 @@ import BrandManagement from "./pages/brands/BrandManagement";
 import InventoryManagement from "./pages/inventory/InventoryManagement";
 import ProductManagement from "./pages/products/ProductManagement";
 import ProductDetails from "./pages/products/ProductDetails";
+import CreateQuotation from "./pages/quotations/CreateQuotation";
+import EditQuotation from "./pages/quotations/EditQuotation";
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
@@ -45,6 +47,30 @@ function App() {
             element={
               <PrivateRoute role={["admin", "manager", "sales_executive", "dealer"]}>
                 <QuotationManagement
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/quotations/new"
+            element={
+              <PrivateRoute role={["admin", "manager", "sales_executive"]}>
+                <CreateQuotation
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/quotations/:id/edit"
+            element={
+              <PrivateRoute role={["admin", "manager", "sales_executive"]}>
+                <EditQuotation
                   theme={theme}
                   onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
                 />

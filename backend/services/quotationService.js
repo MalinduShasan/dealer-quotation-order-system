@@ -55,7 +55,7 @@ const quotationSelect = `
     product_description_snapshot,
     brand_name_snapshot,
     category_name_snapshot,
-    product:products(id, sku, name, dealer_price, unit_price, image_url, status)
+    product:products(id, sku, name, dealer_price, unit_price, image_url, status, stock_quantity, minimum_stock)
   )
 `;
 

@@ -1,0 +1,385 @@
+.builderPage {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+  color: var(--text-primary);
+}
+
+.heroCard,
+.sectionCard,
+.summaryCard,
+.toast,
+.modalCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+}
+
+.heroCard,
+.sectionCard,
+.summaryCard,
+.modalCard {
+  padding: 24px;
+}
+
+.heroCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-primary);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+}
+
+.pageTitle,
+.sectionTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.pageTitle {
+  font-size: clamp(1.45rem, 2vw, 1.95rem);
+}
+
+.subtleText,
+.fieldHint,
+.itemMeta,
+.emptyText,
+.toast p {
+  color: var(--text-secondary);
+}
+
+.builderGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.mainColumn,
+.sideColumn {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-width: 0;
+}
+
+.sideColumn {
+  position: sticky;
+  top: 96px;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fieldGroup,
+.fieldGroupWide {
+  display: grid;
+  gap: 8px;
+}
+
+.fieldGroupWide {
+  grid-column: 1 / -1;
+}
+
+.fieldLabel {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.fieldInput,
+.fieldTextarea,
+.fieldSelect {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.fieldTextarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.fieldError {
+  color: var(--text-danger);
+  font-size: 0.8rem;
+}
+
+.selectorList,
+.searchResults,
+.itemsList {
+  display: grid;
+  gap: 12px;
+}
+
+.selectorCard,
+.productRow,
+.itemCard,
+.summaryLine,
+.productResult {
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  background: var(--bg-card-muted);
+}
+
+.selectorCard,
+.productResult,
+.itemCard {
+  padding: 14px 16px;
+}
+
+.selectorCardHeader,
+.productResultHeader,
+.itemCardHeader,
+.summaryLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.searchBar {
+  display: grid;
+  gap: 12px;
+}
+
+.productResult {
+  display: grid;
+  gap: 8px;
+}
+
+.productResult:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-soft);
+}
+
+.selectedResult {
+  border-color: var(--accent-primary);
+  background: var(--accent-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.resultMetaGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.selectedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-primary);
+  background: var(--bg-card);
+  color: var(--accent-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.stockGood {
+  color: var(--text-success);
+}
+
+.stockWarn {
+  color: var(--text-warning);
+}
+
+.stockBad {
+  color: var(--text-danger);
+}
+
+.qtyRow,
+.itemEditorGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.itemEditorGrid {
+  margin-top: 12px;
+}
+
+.itemActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 14px;
+}
+
+.summaryLine {
+  padding: 12px 14px;
+}
+
+.summaryTotal {
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.ghostButton,
+.toast button {
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), border-color var(--transition-base), opacity var(--transition-base);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.ghostButton {
+  min-height: 44px;
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+
+.primaryButton {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-accent-gradient);
+  color: var(--text-on-accent);
+}
+
+.secondaryButton,
+.ghostButton,
+.toast button {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.dangerButton {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-danger-soft);
+  color: var(--text-danger);
+}
+
+.actionsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inlineButtonRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.toastStack {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 40;
+  display: grid;
+  gap: 12px;
+}
+
+.toast {
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.toast strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.success {
+  border-color: var(--accent-success);
+}
+
+.error {
+  border-color: var(--accent-danger);
+}
+
+@media (max-width: 1100px) {
+  .builderGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    position: static;
+    top: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroCard,
+  .sectionCard,
+  .summaryCard {
+    padding: 18px;
+  }
+
+  .fieldGrid,
+  .qtyRow,
+  .itemEditorGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .actionsRow,
+  .inlineButtonRow {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .toastStack {
+    left: 16px;
+    right: 16px;
+    top: 82px;
+  }
+
+  .toast {
+    width: 100%;
+  }
+}

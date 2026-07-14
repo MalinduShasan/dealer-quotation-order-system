@@ -258,7 +258,7 @@ export default function QuotationManagement({ theme, onToggleTheme }) {
 
   const handleAction = async (action, quotation) => {
     if (action === "edit") {
-      pushToast("info", "Builder pending", "Quotation builder screens will be wired in the next stage.");
+      navigate(`/quotations/${quotation.id}/edit`);
       return;
     }
 
@@ -320,7 +320,14 @@ export default function QuotationManagement({ theme, onToggleTheme }) {
                   Review quotations, monitor lifecycle stages, and prepare approvals or dealer responses from one commercial workspace.
                 </p>
               </div>
-              <div className={styles.mutedText}>Showing {summaryText}</div>
+              <div className={styles.actionMenuWrap}>
+                <div className={styles.mutedText}>Showing {summaryText}</div>
+                {["admin", "manager", "sales_executive"].includes(user.role) ? (
+                  <button type="button" className={styles.primaryButton} onClick={() => navigate("/quotations/new")}>
+                    Create Quotation
+                  </button>
+                ) : null}
+              </div>
             </section>
 
             <QuotationSummaryCards summary={summary} />
