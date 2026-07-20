@@ -3,8 +3,8 @@ const TERMINAL_STATUSES = new Set(["rejected", "expired", "cancelled", "converte
 const statusTransitionMap = {
   draft: ["pending_approval", "approved", "cancelled"],
   pending_approval: ["approved", "rejected", "cancelled"],
-  approved: ["sent", "cancelled", "converted"],
-  sent: ["accepted", "rejected", "expired", "cancelled", "converted"],
+  approved: ["sent", "cancelled"],
+  sent: ["accepted", "rejected", "expired", "cancelled"],
   accepted: ["converted", "cancelled"],
   rejected: [],
   expired: [],
@@ -21,7 +21,7 @@ const canViewQuotation = (user, quotation, dealerId = null) => {
 
 const canEditQuotation = (user, quotation) => {
   if (TERMINAL_STATUSES.has(quotation.status)) return false;
-  if (quotation.status === "accepted") return false;
+  if (["approved", "sent", "accepted"].includes(quotation.status)) return false;
   if (["admin", "manager"].includes(user?.role)) return true;
   return user?.role === "sales_executive" && quotation.status === "draft" && quotation.created_by === (user.id || user._id);
 };

@@ -37,6 +37,8 @@ const mapUser = (user) => {
     password: user.password,
     role: user.role,
     status: user.status,
+    dealerId: user.dealerId || user.dealer_id || null,
+    dealerProfileExists: Boolean(user.dealerId || user.dealer_id),
     createdAt: user.created_at,
     updatedAt: user.updated_at
   };

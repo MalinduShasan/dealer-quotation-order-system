@@ -12,7 +12,7 @@ import { createDealer, getDealerById } from "../../api/dealerService";
 
 const roleOptions = ["admin", "manager", "sales_executive", "dealer"];
 const statusOptions = ["active", "inactive", "suspended"];
-const dealerStatusOptions = ["active", "inactive", "blocked"];
+const dealerStatusOptions = ["draft", "active", "inactive", "blocked"];
 const pageSize = 10;
 
 const initialFormState = {
@@ -21,6 +21,7 @@ const initialFormState = {
   password: "",
   role: "manager",
   status: "active",
+  dealer_profile_id: "",
 };
 
 const initialDealerProfileForm = {
@@ -76,6 +77,9 @@ function validateUserForm(values, isEditMode) {
   }
   if (!values.role) errors.role = "Role is required";
   if (!values.status) errors.status = "Status is required";
+  if (!isEditMode && values.role === "dealer" && !values.dealer_profile_id.trim()) {
+    errors.dealer_profile_id = "Select an unassigned dealer profile for this dealer user";
+  }
   return errors;
 }
 
@@ -171,6 +175,21 @@ function UserFormDrawer({ isOpen, mode, values, errors, submitting, onChange, on
               {errors.status && <p className={styles.fieldError}>{errors.status}</p>}
             </div>
           </div>
+
+          {values.role === "dealer" && (
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel} htmlFor="u-dealer-profile">Dealer Profile ID</label>
+              <input
+                id="u-dealer-profile"
+                name="dealer_profile_id"
+                className={`${styles.fieldInput} ${errors.dealer_profile_id ? styles.fieldInputError : ""}`}
+                value={values.dealer_profile_id}
+                onChange={onChange}
+                placeholder="Unassigned draft dealer profile id"
+              />
+              {errors.dealer_profile_id && <p className={styles.fieldError}>{errors.dealer_profile_id}</p>}
+            </div>
+          )}
         </div>
 
         <div className={styles.drawerFooter}>
@@ -475,7 +494,7 @@ export default function UserManagement({ theme, onToggleTheme }) {
   const openEditDrawer = (u) => {
     setModalMode("edit");
     setEditingUser(u);
-    setFormValues({ name: u.name, email: u.email, password: "", role: u.role, status: u.status });
+    setFormValues({ name: u.name, email: u.email, password: "", role: u.role, status: u.status, dealer_profile_id: u.dealerId || "" });
     setFormErrors({});
     setIsUserDrawerOpen(true);
   };
@@ -511,7 +530,14 @@ export default function UserManagement({ theme, onToggleTheme }) {
         await updateUser(user.token, editingUser.id, payload);
         pushToast("success", "User updated", "The user profile was updated.");
       } else {
-        await createUser(user.token, { name: formValues.name.trim(), email: formValues.email.trim(), password: formValues.password, role: formValues.role, status: formValues.status });
+        await createUser(user.token, {
+          name: formValues.name.trim(),
+          email: formValues.email.trim(),
+          password: formValues.password,
+          role: formValues.role,
+          status: formValues.status,
+          dealer_profile_id: formValues.role === "dealer" ? formValues.dealer_profile_id.trim() : undefined
+        });
         pushToast("success", "User created", "A new system user has been added.");
       }
       setIsUserDrawerOpen(false);

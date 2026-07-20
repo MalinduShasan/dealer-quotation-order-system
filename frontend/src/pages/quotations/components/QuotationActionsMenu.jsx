@@ -9,7 +9,7 @@ export default function QuotationActionsMenu({ quotation, userRole, onView, onAc
     (["admin", "manager"].includes(userRole) || (userRole === "sales_executive" && quotation.status === "draft"));
 
   const actions = useMemo(() => {
-    const items = [{ id: "duplicate", label: "Duplicate" }];
+    const items = userRole === "dealer" ? [] : [{ id: "duplicate", label: "Duplicate" }];
 
     if (canEdit) {
       items.unshift({ id: "edit", label: "Edit" });
@@ -26,7 +26,7 @@ export default function QuotationActionsMenu({ quotation, userRole, onView, onAc
     if (quotation.status === "accepted" && ["admin", "manager", "sales_executive", "dealer"].includes(userRole)) {
       items.push({ id: "convert", label: "Convert to Order" });
     }
-    if (!["converted", "rejected", "expired", "cancelled"].includes(quotation.status)) {
+    if (userRole !== "dealer" && !["converted", "rejected", "expired", "cancelled"].includes(quotation.status)) {
       items.push({ id: "cancel", label: "Cancel" });
     }
 

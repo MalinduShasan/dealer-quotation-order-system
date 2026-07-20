@@ -34,14 +34,29 @@ function formatCurrency(value, currency = "USD") {
 
 function formatDate(value, withTime = false) {
   if (!value) return "-";
+  const normalizedValue = typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? `${value}T00:00:00`
+    : value;
   const options = withTime
     ? { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
     : { year: "numeric", month: "short", day: "numeric" };
-  return new Intl.DateTimeFormat("en-US", options).format(new Date(value));
+  const date = new Date(normalizedValue);
+  if (Number.isNaN(date.getTime())) return "-";
+  return new Intl.DateTimeFormat("en-US", options).format(date);
 }
 
 function labelStatus(status) {
   return (status || "").replaceAll("_", " ") || "unknown";
+}
+
+function formatTimelineTitle(entry) {
+  if (!entry.oldStatus) return "Quotation Created";
+  return `${labelStatus(entry.oldStatus)} to ${labelStatus(entry.newStatus)}`;
+}
+
+function formatTimelineNote(entry) {
+  if (!entry.oldStatus) return `Initial status: ${labelStatus(entry.newStatus)}`;
+  return entry.note || "";
 }
 
 function ToastStack({ toasts, onDismiss }) {
@@ -351,10 +366,10 @@ export default function QuotationDetails({ theme, onToggleTheme }) {
                       {history.map((entry) => (
                         <div key={entry.id} className={styles.timelineItem}>
                           <div>
-                            <strong>{labelStatus(entry.oldStatus)} to {labelStatus(entry.newStatus)}</strong>
+                            <strong>{formatTimelineTitle(entry)}</strong>
                             <span>{entry.changedByName || "System"} - {formatDate(entry.createdAt, true)}</span>
                           </div>
-                          {entry.note ? <p>{entry.note}</p> : null}
+                          {formatTimelineNote(entry) ? <p>{formatTimelineNote(entry)}</p> : null}
                         </div>
                       ))}
                     </div>

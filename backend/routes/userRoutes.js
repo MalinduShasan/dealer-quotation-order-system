@@ -31,62 +31,23 @@ const serializeUser = (user, dealerProfile = null) => {
   };
 };
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+const loadDealerProfileForLogin = (user) =>
+  unwrapSingle(
+    supabase
+      .from("dealers")
+      .select("id, dealer_code, company_name, email")
+      .eq("user_id", user.id)
+      .eq("email", user.email)
+      .is("deleted_at", null)
+      .maybeSingle()
+  );
+
+const generateToken = (id, dealerId = null) => {
+  return jwt.sign({ id, dealerId }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
 router.post("/register", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    const trimmedName = name?.trim();
-    const normalizedEmail = normalizeEmail(email);
-
-    if (!trimmedName || !normalizedEmail || !password) {
-      return res.status(400).json({ message: "Name, email and password are required" });
-    }
-
-    if (password.length < 8) {
-      return res.status(400).json({ message: "Password must be at least 8 characters" });
-    }
-
-    const existingUser = await unwrapSingle(
-      supabase.from("users").select("*").eq("email", normalizedEmail).is("deleted_at", null).maybeSingle()
-    );
-
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const createdUser = await unwrapSingle(
-      supabase
-        .from("users")
-        .insert({
-          name: trimmedName,
-          email: normalizedEmail,
-          password: hashedPassword,
-          role: "dealer",
-          status: "active",
-          created_by: getActorId(req.user)
-        })
-        .select("id, name, email, role, status, created_at, updated_at")
-        .single()
-    );
-
-    const user = mapUser(createdUser);
-
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id)
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  return res.status(403).json({ message: "Dealer accounts must be created by an admin with a linked dealer profile" });
 });
 
 router.post("/login", async (req, res) => {
@@ -118,12 +79,23 @@ router.post("/login", async (req, res) => {
 
     const user = mapUser(userRecord);
 
+    const dealerProfile = user.role === "dealer" ? await loadDealerProfileForLogin(user) : null;
+
+    if (user.role === "dealer" && !dealerProfile) {
+      return res.status(403).json({ message: "Dealer account is not linked to a dealer profile" });
+    }
+
     res.json({
       _id: user._id,
+      id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id)
+      dealerId: dealerProfile?.id || null,
+      dealerProfileExists: Boolean(dealerProfile),
+      dealerCode: dealerProfile?.dealer_code || null,
+      companyName: dealerProfile?.company_name || null,
+      token: generateToken(user._id, dealerProfile?.id || null)
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -208,7 +180,7 @@ router.get("/", protect, adminOnly, async (req, res) => {
 
 router.post("/", protect, adminOnly, async (req, res) => {
   try {
-    const { name, email, password, role, status } = req.body;
+    const { name, email, password, role, status, dealer_profile_id } = req.body;
     const trimmedName = normalizeText(name);
     const normalizedEmail = normalizeEmail(email);
     const normalizedStatus = status || "active";
@@ -238,6 +210,34 @@ router.post("/", protect, adminOnly, async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    let dealerProfile = null;
+
+    if (role === "dealer") {
+      if (!dealer_profile_id) {
+        return res.status(400).json({ message: "Dealer users must be linked to an unassigned dealer profile" });
+      }
+
+      dealerProfile = await unwrapSingle(
+        supabase
+          .from("dealers")
+          .select("id, user_id, email, status")
+          .eq("id", dealer_profile_id)
+          .is("deleted_at", null)
+          .maybeSingle()
+      );
+
+      if (!dealerProfile) {
+        return res.status(400).json({ message: "Dealer profile not found" });
+      }
+
+      if (dealerProfile.user_id) {
+        return res.status(400).json({ message: "Dealer profile is already linked to a user" });
+      }
+
+      if (dealerProfile.email !== normalizedEmail) {
+        return res.status(400).json({ message: "Dealer user email must match the dealer profile email" });
+      }
+    }
 
     const createdUser = await unwrapSingle(
       supabase
@@ -254,7 +254,25 @@ router.post("/", protect, adminOnly, async (req, res) => {
         .single()
     );
 
-    res.status(201).json(serializeUser(createdUser));
+    if (role === "dealer") {
+      await unwrapSingle(
+        supabase
+          .from("dealers")
+          .update({
+            user_id: createdUser.id,
+            status: dealerProfile.status === "draft" ? "active" : dealerProfile.status,
+            updated_at: new Date().toISOString(),
+            updated_by: getActorId(req.user)
+          })
+          .eq("id", dealerProfile.id)
+          .is("user_id", null)
+          .select("id")
+          .single()
+      );
+    }
+
+    const linkedDealerProfile = role === "dealer" ? await loadDealerProfileForLogin(createdUser) : null;
+    res.status(201).json(serializeUser(createdUser, linkedDealerProfile));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -284,7 +302,7 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
     }
 
     const existingUser = await unwrapSingle(
-      supabase.from("users").select("id").eq("id", id).is("deleted_at", null).maybeSingle()
+      supabase.from("users").select("id, role").eq("id", id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingUser) {
@@ -297,6 +315,23 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
 
     if (duplicateUser) {
       return res.status(400).json({ message: "Email address is already in use" });
+    }
+
+    if (role === "dealer") {
+      const dealerProfile = await loadDealerProfileForLogin({ id });
+      if (!dealerProfile) {
+        return res.status(400).json({ message: "Dealer users must have exactly one linked dealer profile" });
+      }
+      if (dealerProfile.email !== normalizedEmail) {
+        return res.status(400).json({ message: "Dealer user email must match the linked dealer profile email" });
+      }
+    }
+
+    if (existingUser.role === "dealer" && role !== "dealer") {
+      const dealerProfile = await loadDealerProfileForLogin({ id });
+      if (dealerProfile) {
+        return res.status(400).json({ message: "Unlink or reassign the dealer profile before changing this user's role" });
+      }
     }
 
     const updates = {
@@ -337,11 +372,18 @@ router.patch("/:id/status", protect, adminOnly, async (req, res) => {
     }
 
     const existingUser = await unwrapSingle(
-      supabase.from("users").select("id").eq("id", id).is("deleted_at", null).maybeSingle()
+      supabase.from("users").select("id, role").eq("id", id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    if (existingUser.role === "dealer" && status === "active") {
+      const dealerProfile = await loadDealerProfileForLogin({ id });
+      if (!dealerProfile) {
+        return res.status(400).json({ message: "Dealer users must have a linked dealer profile before activation" });
+      }
     }
 
     const updatedUser = await unwrapSingle(

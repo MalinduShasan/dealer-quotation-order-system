@@ -29,7 +29,27 @@ const protect = async (req, res, next) => {
       return res.status(403).json({ message: "User account is not active" });
     }
 
-    req.user = mapUser(userRecord);
+    const dealerProfile =
+      userRecord.role === "dealer"
+        ? await unwrapSingle(
+            supabase
+              .from("dealers")
+              .select("id")
+              .eq("user_id", userRecord.id)
+              .eq("email", userRecord.email)
+              .is("deleted_at", null)
+              .maybeSingle()
+          )
+        : null;
+
+    if (userRecord.role === "dealer" && !dealerProfile) {
+      return res.status(403).json({ message: "Dealer account is not linked to a dealer profile" });
+    }
+
+    req.user = mapUser({
+      ...userRecord,
+      dealer_id: dealerProfile?.id || null
+    });
     next();
   } catch (error) {
     return res.status(401).json({ message: "Not authorized" });

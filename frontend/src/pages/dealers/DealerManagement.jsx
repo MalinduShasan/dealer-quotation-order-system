@@ -9,7 +9,7 @@ import shellStyles from "../../components/dashboard/AdminDashboard.module.css";
 import styles from "./DealerManagement.module.css";
 import { createDealer, getDealers, updateDealer, updateDealerStatus } from "../../api/dealerService";
 
-const statusOptions = ["active", "inactive", "blocked"];
+const statusOptions = ["draft", "active", "inactive", "blocked"];
 const pageSize = 10;
 
 const initialFormState = {
@@ -54,6 +54,9 @@ function validateForm(values) {
   }
 
   if (!values.status) errors.status = "Status is required";
+  if (values.status !== "draft" && !values.user_id.trim()) {
+    errors.user_id = "Linked dealer user is required unless this is a draft profile";
+  }
 
   return errors;
 }
@@ -97,7 +100,7 @@ function DealerFormModal({ isOpen, mode, values, errors, submitting, onChange, o
         <form className={styles.formGrid} onSubmit={onSubmit}>
           {[
             ["dealer_code", "Dealer Code", "Optional. Auto-generated if empty"],
-            ["user_id", "Linked Dealer User ID", "Optional dealer user id"],
+            ["user_id", "Linked Dealer User ID", "Required unless status is draft"],
             ["company_name", "Company Name", "Registered dealer company"],
             ["contact_person", "Contact Person", "Primary contact"],
             ["email", "Email", "contact@company.com"],
@@ -523,7 +526,9 @@ export default function DealerManagement({ theme, onToggleTheme }) {
                                   setConfirmDealer({
                                     ...dealer,
                                     nextStatus:
-                                      dealer.status === "active"
+                                      dealer.status === "draft"
+                                        ? "active"
+                                        : dealer.status === "active"
                                         ? "inactive"
                                         : dealer.status === "inactive"
                                           ? "blocked"

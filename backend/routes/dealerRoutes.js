@@ -11,7 +11,7 @@ const {
 
 const router = express.Router();
 const managerAccess = allowRoles("admin", "manager");
-const allowedStatuses = ["active", "inactive", "blocked"];
+const allowedStatuses = ["draft", "active", "inactive", "blocked"];
 
 const quotationSelect = `
   id,
@@ -73,15 +73,21 @@ const validateDealerPayload = async (payload, existingId = null) => {
     errors.push("Invalid dealer status");
   }
 
+  if (!userId && status !== "draft") {
+    errors.push("Dealer user is required unless this is an unassigned draft profile");
+  }
+
   if (userId) {
     const dealerUser = await unwrapSingle(
-      supabase.from("users").select("id, role").eq("id", userId).is("deleted_at", null).maybeSingle()
+      supabase.from("users").select("id, role, email").eq("id", userId).is("deleted_at", null).maybeSingle()
     );
 
     if (!dealerUser) {
       errors.push("Selected dealer user was not found");
     } else if (dealerUser.role !== "dealer") {
       errors.push("Selected user must have dealer role");
+    } else if (dealerUser.email !== email) {
+      errors.push("Dealer profile email must match the linked dealer user email");
     }
 
     const duplicateLinkedProfileQuery = supabase.from("dealers").select("id").eq("user_id", userId).is("deleted_at", null);
@@ -228,11 +234,15 @@ router.post("/", protect, managerAccess, async (req, res) => {
 router.put("/:id", protect, managerAccess, async (req, res) => {
   try {
     const existingDealer = await unwrapSingle(
-      supabase.from("dealers").select("id").eq("id", req.params.id).is("deleted_at", null).maybeSingle()
+      supabase.from("dealers").select("id, user_id").eq("id", req.params.id).is("deleted_at", null).maybeSingle()
     );
 
     if (!existingDealer) {
       return res.status(404).json({ message: "Dealer not found" });
+    }
+
+    if (status !== "draft" && !existingDealer.user_id) {
+      return res.status(400).json({ message: "Dealer user is required unless this is a draft profile" });
     }
 
     const { errors, values } = await validateDealerPayload(req.body, req.params.id);

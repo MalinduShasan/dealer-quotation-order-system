@@ -14,7 +14,7 @@ router.post("/:id/reject", protect, allowRoles("admin", "manager"), controller.r
 router.post("/:id/send", protect, allowRoles("admin", "manager", "sales_executive"), controller.sendQuotation);
 router.post("/:id/accept", protect, allowRoles("dealer"), controller.acceptQuotation);
 router.post("/:id/decline", protect, allowRoles("dealer"), controller.declineQuotation);
-router.post("/:id/cancel", protect, allowRoles("admin", "manager", "sales_executive", "dealer"), controller.cancelQuotation);
+router.post("/:id/cancel", protect, allowRoles("admin", "manager", "sales_executive"), controller.cancelQuotation);
 router.post("/:id/duplicate", protect, allowRoles("admin", "manager", "sales_executive"), controller.duplicateQuotation);
 router.get("/:id/history", protect, allowRoles("admin", "manager", "sales_executive", "dealer"), controller.getQuotationHistory);
 router.get("/:id/pdf", protect, allowRoles("admin", "manager", "sales_executive", "dealer"), controller.pdfNotReady);

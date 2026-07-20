@@ -74,8 +74,26 @@ const roundCurrency = (value) => Math.round((Number(value || 0) + Number.EPSILON
 
 const normalizeSearch = (value) => value?.trim() || "";
 
-const getDealerForUser = async (userId) =>
-  unwrapSingle(supabase.from("dealers").select("id").eq("user_id", userId).maybeSingle());
+const getDealerForUser = async (user) => {
+  const actorId = getActorId(user);
+
+  if (user?.dealerId) {
+    const dealerById = await unwrapSingle(
+      supabase.from("dealers").select("id").eq("id", user.dealerId).is("deleted_at", null).maybeSingle()
+    );
+    if (dealerById) return dealerById;
+  }
+
+  return unwrapSingle(
+    supabase
+      .from("dealers")
+      .select("id")
+      .eq("user_id", actorId)
+      .eq("email", user.email)
+      .is("deleted_at", null)
+      .maybeSingle()
+  );
+};
 
 const getQuotationByIdRaw = async (quotationId) =>
   unwrapSingle(supabase.from("quotations").select(quotationSelect).eq("id", quotationId).single());
@@ -88,7 +106,7 @@ const getQuotationWithAccess = async (quotationId, user) => {
     throw error;
   }
 
-  const dealer = user.role === "dealer" ? await getDealerForUser(getActorId(user)) : null;
+  const dealer = user.role === "dealer" ? await getDealerForUser(user) : null;
   if (!canViewQuotation(user, quotation, dealer?.id || null)) {
     const error = new Error("Access denied");
     error.statusCode = 403;
@@ -201,7 +219,7 @@ const listQuotations = async (user, params = {}) => {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
   const actorId = getActorId(user);
-  const dealer = user.role === "dealer" ? await getDealerForUser(actorId) : null;
+  const dealer = user.role === "dealer" ? await getDealerForUser(user) : null;
 
   let query = supabase.from("quotations").select(quotationSelect, { count: "exact" });
 
@@ -467,8 +485,7 @@ const transitionQuotationStatus = async (user, quotationId, nextStatus, note = "
 
   const updatePayload = {
     status: nextStatus,
-    updated_by: actorId,
-    version: Number(existing.version || 1) + 1
+    updated_by: actorId
   };
 
   if (statusTimestampFields[nextStatus]) {
@@ -503,10 +520,19 @@ const transitionQuotationStatus = async (user, quotationId, nextStatus, note = "
 };
 
 const duplicateQuotation = async (user, quotationId) => {
-  const existing = await getQuotationWithAccess(quotationId, user);
-  return createQuotation(user, {
+  const existingRaw = await getQuotationWithAccess(quotationId, user);
+  const existing = mapQuotationWithItems(existingRaw);
+  const sourceItems = existing.items || [];
+
+  if (!sourceItems.length) {
+    const error = new Error("Quotation has no items to duplicate");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  const duplicated = await createQuotation(user, {
     dealer_id: existing.dealerId,
-    items: existing.items.map((item) => ({
+    items: sourceItems.map((item) => ({
       product_id: item.productId,
       quantity: item.quantity,
       unit_price: item.unitPrice,
@@ -518,19 +544,42 @@ const duplicateQuotation = async (user, quotationId) => {
     shipping_amount: existing.shippingAmount,
     valid_until: existing.validUntil,
     terms: existing.terms,
-    internal_notes: existing.internalNotes,
+    internal_notes: "",
     dealer_notes: existing.dealerNotes,
     status: "draft",
     currency_code: existing.currencyCode || "USD",
     discount_percentage: existing.discountPercentage || 0,
     tax_percentage: existing.taxPercentage || 0
   });
+
+  const sourceSnapshotsByProductId = new Map(sourceItems.map((item) => [item.productId, item]));
+  await Promise.all(
+    (duplicated.items || []).map((item) => {
+      const sourceItem = sourceSnapshotsByProductId.get(item.productId);
+      if (!sourceItem) return Promise.resolve();
+
+      return unwrap(
+        supabase
+          .from("quotation_items")
+          .update({
+            product_name_snapshot: sourceItem.productNameSnapshot,
+            product_sku_snapshot: sourceItem.productSkuSnapshot,
+            product_description_snapshot: sourceItem.productDescriptionSnapshot,
+            brand_name_snapshot: sourceItem.brandNameSnapshot,
+            category_name_snapshot: sourceItem.categoryNameSnapshot
+          })
+          .eq("id", item.id)
+      );
+    })
+  );
+
+  return mapQuotationWithItems(await getQuotationByIdRaw(duplicated.id));
 };
 
 const getQuotationHistory = async (user, quotationId) => {
   await getQuotationWithAccess(quotationId, user);
   const items = await unwrap(
-    supabase.from("quotation_status_history").select(historySelect).eq("quotation_id", quotationId).order("created_at", { ascending: false })
+    supabase.from("quotation_status_history").select(historySelect).eq("quotation_id", quotationId).order("created_at", { ascending: true })
   );
 
   return items.map((item) => ({
