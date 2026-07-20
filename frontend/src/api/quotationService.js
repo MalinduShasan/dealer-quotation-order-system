@@ -35,3 +35,6 @@ export const acceptQuotation = (token, quotationId) => actionPost(token, quotati
 export const declineQuotation = (token, quotationId, reason) => actionPost(token, quotationId, "decline", { reason });
 export const cancelQuotation = (token, quotationId, reason) => actionPost(token, quotationId, "cancel", { reason });
 export const duplicateQuotation = (token, quotationId) => actionPost(token, quotationId, "duplicate");
+
+export const convertQuotationToOrder = (token, quotationId) =>
+  axios.post(`${API_URL}/orders/from-quotation/${quotationId}`, {}, authConfig(token));

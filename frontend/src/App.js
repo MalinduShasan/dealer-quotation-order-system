@@ -13,6 +13,7 @@ import ProductManagement from "./pages/products/ProductManagement";
 import ProductDetails from "./pages/products/ProductDetails";
 import CreateQuotation from "./pages/quotations/CreateQuotation";
 import EditQuotation from "./pages/quotations/EditQuotation";
+import QuotationDetails from "./pages/quotations/QuotationDetails";
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
@@ -71,6 +72,18 @@ function App() {
             element={
               <PrivateRoute role={["admin", "manager", "sales_executive"]}>
                 <EditQuotation
+                  theme={theme}
+                  onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
+                />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/quotations/:id"
+            element={
+              <PrivateRoute role={["admin", "manager", "sales_executive", "dealer"]}>
+                <QuotationDetails
                   theme={theme}
                   onToggleTheme={() => setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))}
                 />

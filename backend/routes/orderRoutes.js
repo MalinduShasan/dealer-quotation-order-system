@@ -141,9 +141,9 @@ router.post(
         return res.status(404).json({ message: "Quotation not found" });
       }
 
-      if (!["accepted", "approved", "sent"].includes(quotation.status)) {
+      if (quotation.status !== "accepted") {
         return res.status(400).json({
-          message: "Only approved, sent, or accepted quotations can be converted to orders"
+          message: "Only accepted quotations can be converted to orders"
         });
       }
 
@@ -201,9 +201,21 @@ router.post(
           .from("quotations")
           .update({
             status: "converted",
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: req.user.id || req.user._id,
+            converted_at: new Date().toISOString()
           })
           .eq("id", quotation.id)
+      );
+
+      await unwrap(
+        supabase.from("quotation_status_history").insert({
+          quotation_id: quotation.id,
+          old_status: quotation.status,
+          new_status: "converted",
+          changed_by: req.user.id || req.user._id,
+          note: "Quotation converted to order"
+        })
       );
 
       const createdOrder = await unwrapSingle(

@@ -4,11 +4,14 @@ import styles from "../QuotationManagement.module.css";
 
 export default function QuotationActionsMenu({ quotation, userRole, onView, onAction }) {
   const [open, setOpen] = useState(false);
+  const canEdit =
+    !["converted", "rejected", "expired", "cancelled", "accepted"].includes(quotation.status) &&
+    (["admin", "manager"].includes(userRole) || (userRole === "sales_executive" && quotation.status === "draft"));
 
   const actions = useMemo(() => {
     const items = [{ id: "duplicate", label: "Duplicate" }];
 
-    if (["admin", "manager"].includes(userRole) || (userRole === "sales_executive" && quotation.status === "draft")) {
+    if (canEdit) {
       items.unshift({ id: "edit", label: "Edit" });
     }
 
@@ -20,7 +23,7 @@ export default function QuotationActionsMenu({ quotation, userRole, onView, onAc
     if (quotation.status === "sent" && userRole === "dealer") {
       items.push({ id: "accept", label: "Accept" }, { id: "decline", label: "Decline" });
     }
-    if (["approved", "accepted", "sent"].includes(quotation.status) && ["admin", "manager"].includes(userRole)) {
+    if (quotation.status === "accepted" && ["admin", "manager", "sales_executive", "dealer"].includes(userRole)) {
       items.push({ id: "convert", label: "Convert to Order" });
     }
     if (!["converted", "rejected", "expired", "cancelled"].includes(quotation.status)) {
@@ -28,7 +31,7 @@ export default function QuotationActionsMenu({ quotation, userRole, onView, onAc
     }
 
     return items;
-  }, [quotation.status, userRole]);
+  }, [canEdit, quotation.status, userRole]);
 
   return (
     <div className={styles.actionMenuWrap}>
@@ -36,9 +39,11 @@ export default function QuotationActionsMenu({ quotation, userRole, onView, onAc
         <EyeIcon className={styles.actionIcon} />
         <span>View</span>
       </button>
-      <button type="button" className={styles.iconButton} onClick={() => onAction("edit", quotation)} title="Edit quotation">
-        <EditIcon className={styles.actionIcon} />
-      </button>
+      {canEdit ? (
+        <button type="button" className={styles.iconButton} onClick={() => onAction("edit", quotation)} title="Edit quotation">
+          <EditIcon className={styles.actionIcon} />
+        </button>
+      ) : null}
       <button type="button" className={styles.iconButton} onClick={() => setOpen((current) => !current)} title="More actions">
         <span className={styles.moreDots}>•••</span>
       </button>

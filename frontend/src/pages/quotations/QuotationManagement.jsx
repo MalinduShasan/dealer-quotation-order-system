@@ -10,6 +10,7 @@ import {
   acceptQuotation,
   approveQuotation,
   cancelQuotation,
+  convertQuotationToOrder,
   declineQuotation,
   duplicateQuotation,
   getQuotationById,
@@ -228,6 +229,11 @@ export default function QuotationManagement({ theme, onToggleTheme }) {
   };
 
   const handleView = async (quotation) => {
+    if (quotation?.id) {
+      navigate(`/quotations/${quotation.id}`);
+      return;
+    }
+
     setViewQuotation(quotation);
     setHistory([]);
     setHistoryLoading(true);
@@ -253,17 +259,13 @@ export default function QuotationManagement({ theme, onToggleTheme }) {
     accept: acceptQuotation,
     decline: declineQuotation,
     cancel: cancelQuotation,
+    convert: convertQuotationToOrder,
     duplicate: duplicateQuotation
   };
 
   const handleAction = async (action, quotation) => {
     if (action === "edit") {
       navigate(`/quotations/${quotation.id}/edit`);
-      return;
-    }
-
-    if (action === "convert") {
-      pushToast("info", "Conversion pending", "Order conversion preparation is reserved for the next stage.");
       return;
     }
 
